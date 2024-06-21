@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <channels>
     <channel>
@@ -21,5 +20,4 @@
         <name>TRT BELGESEL</name>
         <url>https://tv-trtbelgesel.medya.trt.com.tr/master_720.m3u8</url>
     </channel>
-    <!-- Daha fazla kanal ekleyebilirsiniz -->
 </channels>
