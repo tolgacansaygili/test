@@ -1,0 +1,24 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+<channels>
+    <channel>
+        <name>STAR</name>
+        <url>https://dogus.daioncdn.net/startv/startv_720p.m3u8?&sid=6i6hpdrpvp0p&app=a20ac41e-bdc3-4aa1-934d-26b484480ac9&ce=3</url>
+    </channel>
+    <channel>
+        <name>TRT1</name>
+        <url>https://trt.daioncdn.net/trt-1/master_720p.m3u8?&sid=6i6iwc3tq7l9&app=ed3904e8-737b-4a5e-856a-1b0d7a0a94e2&ce=2</url>
+    </channel>
+    <channel>
+        <name>CNBC-E</name>
+        <url>https://cnbc-e-live.ercdn.net/cnbce/cnbce_720p.m3u8?st=oy3Wnt7f_PcYN5kMiyKipw&e=1718931483</url>
+    </channel>
+    <channel>
+        <name>Bloomberg HT</name>
+        <url>https://ciner.daioncdn.net/bloomberght/bloomberght_720p.m3u8?ex=1649424566&st=4Y790MeXScF5LDOhVNykUQ&tv=1&sid=6i7l9sfbuc6w&app=201b9556-b11c-4d92-b264-f21fd24e9aaf&ce=3</url>
+    </channel>
+    <channel>
+        <name>TRT BELGESEL</name>
+        <url>https://tv-trtbelgesel.medya.trt.com.tr/master_720.m3u8</url>
+    </channel>
+    <!-- Daha fazla kanal ekleyebilirsiniz -->
+</channels>
