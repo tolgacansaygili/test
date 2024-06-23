@@ -10,7 +10,7 @@
     </channel>
     <channel>
         <name>CNBC-E</name>
-        <url>https://switch-api.tvplus.com.tr/pl/176.235.2.69:80/izmottrrs.tvplus.com.tr/PLTV/88888888/224/3221229516/3221229516.mpd?rrsip=izmottrrs.tvplus.com.tr:443&amp;zoneoffset=0&amp;devkbps=190-15000&amp;servicetype=1&amp;limitflux=-1&amp;limitdur=-1&amp;tenantId=9001&amp;accountinfo=kNSFFfXQJwkiCh%2BHq426yQHcu18mAHFAdaAPc4y2xphqTNjptjBHoGOL3zfExrKvjd4MhjVC57dJ2A6VzUMT9pCXIsmUlYOaJ452PolclZ7lqSDS9TgCZaweB3bPPnA%2FH9cH8r7S5%2B1lhWq%2FHU5sKHHnW%2B1gcjnCZTuhT17c6Bc4ZGDx89qY3NmkRbIudYr3%3A20240623164645%3AUTC%2C%2C%2C20240623164645%2Curn%3AHuawei%3AliveTV%3AXTV100000912%2C%2C-1%2C0%2C1%2C%2C%2C2%2C545%2C%2C%2C2%2C%2C0%2C%2C%2C%2C%2C2%2C1%2C100068178%2CEND&amp;GuardEncType=2&amp;from=31&amp;validdev=5271,5269&amp;hms_devid=5271&amp;pbf=2_2_1_905688581&amp;vqe=3&amp;app_version=firefox,WebTV,OSVersion=Win32,AppVersion=5.2.4.1,webtv&amp;custom_sid=MjMwMDAwMjI5MDYyMDI=&amp;servicetype=1&amp;uid=oYqAHJWLzCOsU9VAg9hGGQ&amp;sw_lh=ojIRE8In0k6HRTk7G0TwZA==&amp;srv=cGwtZ2J6LXMwOC50dnBsdXMuY29tLnRy&amp;sw_h1=H3lIokcoIrQL7glOUEumUQ&amp;srv2=cGwtYXZyLXMwMy50dnBsdXMuY29tLnRy&amp;sw_h2=PthuywFz_-pDSbtDpPOPKg&amp;proxy=true</url>
+        <url>https://iptv-org.github.io/iptv/categories/music.m3u</url>
     </channel>
     <channel>
         <name>Bloomberg HT</name>
