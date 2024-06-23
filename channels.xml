@@ -9,8 +9,8 @@
         <url>https://trt.daioncdn.net/trt-1/master_720p.m3u8?&amp;sid=6i6iwc3tq7l9&amp;app=ed3904e8-737b-4a5e-856a-1b0d7a0a94e2&amp;ce=2</url>
     </channel>
     <channel>
-        <name>CNBC-E</name>
-        <url>https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/6076cd1df8576d0007c82193/master.m3u8</url>
+        <name>VH1</name>
+        <url>http://50.7.144.75:8081/vh1/index.m3u8?wmsAuthSign=efcf0866d4329b78f853a80fa4f744ad-1538439188-661i39i811i712</url>
     </channel>
     <channel>
         <name>Bloomberg HT</name>
