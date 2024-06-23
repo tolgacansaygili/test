@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<songs>
+    <song>
+        <title>Şarkı 1</title>
+        <src>song1.mp3</src>
+    </song>
+    <song>
+        <title>Şarkı 2</title>
+        <src>song2.mp3</src>
+    </song>
+    <song>
+        <title>Şarkı 3</title>
+        <src>song3.mp3</src>
+    </song>
+</songs>
