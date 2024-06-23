@@ -10,7 +10,7 @@
     </channel>
     <channel>
         <name>CNBC-E</name>
-        <url>https://iptv-org.github.io/iptv/categories/music.m3u</url>
+        <url>https://service-stitcher.clusters.pluto.tv/v1/stitch/embed/hls/channel/6076cd1df8576d0007c82193/master.m3u8</url>
     </channel>
     <channel>
         <name>Bloomberg HT</name>
