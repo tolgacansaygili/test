@@ -2,14 +2,14 @@
 <songs>
     <song>
         <title>Şarkı 1</title>
-        <src>song1.mp3</src>
+        <src>001.mp3</src>
     </song>
     <song>
         <title>Şarkı 2</title>
-        <src>song2.mp3</src>
+        <src>002.mp3</src>
     </song>
     <song>
         <title>Şarkı 3</title>
-        <src>song3.mp3</src>
+        <src>003.mp3</src>
     </song>
 </songs>
