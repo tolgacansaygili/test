@@ -10,7 +10,9 @@
     </channel>
     <channel>
         <name>VH1</name>
-        <url>http://50.7.144.75:8081/vh1/index.m3u8?wmsAuthSign=efcf0866d4329b78f853a80fa4f744ad-1538439188-661i39i811i712</url>
+        <url>http://50.7.144.75:8081/vh1/index.m3u8?wmsAuthSign=efcf0866d4329b78f853a80fa4f744ad-1538439188-661i39i811i712&amp;wmsAuthSign=efcf0866d4329b78f853a80fa4f744ad-1538439188-661i39i811i712
+
+</url>
     </channel>
     <channel>
         <name>Bloomberg HT</name>
