@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <songs>
     <song>
-        <title>Şarkı 1</title>
-        <src>001.mp3</src>
+        <title>Track 1</title>
+        <src>https://tolgacansaygili.github.io/test/001.mp3</src>
     </song>
     <song>
-        <title>Şarkı 2</title>
-        <src>002.mp3</src>
+        <title>Track 2</title>
+        <src>https://tolgacansaygili.github.io/test/002.mp3</src>
     </song>
     <song>
-        <title>Şarkı 3</title>
-        <src>003.mp3</src>
+        <title>Track 3</title>
+        <src>https://tolgacansaygili.github.io/test/003.mp3</src>
     </song>
 </songs>
