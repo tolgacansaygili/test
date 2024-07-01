@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <channels>
+ 
+       
     <channel>
-        <name>STAR</name>
-        <url>https://dogus.daioncdn.net/startv/startv_720p.m3u8?&amp;sid=6i6hpdrpvp0p&amp;app=a20ac41e-bdc3-4aa1-934d-26b484480ac9&amp;ce=3</url>
-    </channel>
-    <channel>
-        <name>TRT1</name>
-        <url>https://trt.daioncdn.net/trt-1/master_720p.m3u8?&amp;sid=6i6iwc3tq7l9&amp;app=ed3904e8-737b-4a5e-856a-1b0d7a0a94e2&amp;ce=2</url>
-    </channel>
-    <channel>
-        <name>NTV</name>
-        <url>https://dogus.daioncdn.net/ntv/ntv_720p.m3u8?token=e8c0dec16bf84c8cc187224d13811c0e705fd2c58b25d7ee&amp;sid=6i8l2wgogq83&amp;app=c68bddbe-3dbf-49f7-892a-93de5ae37f1f&amp;ce=3</url>
-    </channel>
-    <channel>
-        <name>Bloomberg HT</name>
-        <url>https://ciner.daioncdn.net/bloomberght/bloomberght_720p.m3u8?ex=1649424566&amp;st=4Y790MeXScF5LDOhVNykUQ&amp;tv=1&amp;sid=6i7l9sfbuc6w&amp;app=201b9556-b11c-4d92-b264-f21fd24e9aaf&amp;ce=3</url>
-    </channel>
-    <channel>
-        <name>TRT BELGESEL</name>
-        <url>https://tv-trtbelgesel.medya.trt.com.tr/master_720.m3u8</url>
+        <name>TRT 2</name>
+        <url>https://tv-trt2.medya.trt.com.tr/master_720.m3u8</url>
     </channel>
     <channel>
         <name>MTV CLASSIC</name>
