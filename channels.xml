@@ -6,6 +6,7 @@
         <name>TRT 1</name>
         <url>https://tv-trt1.medya.trt.com.tr/master.m3u8</url>
     </channel>
+    <channel>
         <name>TRT 2</name>
         <url>https://tv-trt2.medya.trt.com.tr/master_720.m3u8</url>
     </channel>
