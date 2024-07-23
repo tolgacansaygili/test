@@ -5,32 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rüya Tabirleri</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-            margin: 0;
-        }
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Sayfanın minimum yüksekliği */
+    margin: 0;
+    background-image: url('bg.jpg'); /* Arka plan resmi */
+    background-size: auto; /* Resmin boyutunu değiştirmeden orijinal boyutunda kalmasını sağlar */
+    background-position: center; /* Resmin ortada olmasını sağlar */
+    background-repeat: repeat; /* Arka plan resminin tekrarlanmasını sağlar */
+    background-position-y: 0px; /* Arka plan resminin tam yukarıdan başlamasını sağlar */
+    overflow: auto; /* Sayfanın kaydırılabilir olmasını sağlar */
+}
 
-        .container {
-            text-align: center;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 250px;
-        }
+
+
+
+
+
+
+
+.container {
+    position: relative; /* Konteynerin konumunu sabitler */
+    background: rgba(255, 255, 255, 0.8); /* Arka plan rengi ve şeffaflık */
+    padding: 20px;
+    border-radius: 18px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 750px;
+    margin: 20px; /* Konteynerin etrafında boşluk sağlar */
+}
+
+
 
         input {
             padding: 10px;
             margin: 5px;
             width: calc(100% - 22px);
             box-sizing: border-box;
+            border-radius: 18px; /* Köşeleri yuvarlatır */
+            border-width: 0px;
+            outline: none; /* Odaklanıldığında sınır çizilmesini engeller */
+
+ 
         }
+
+        input:focus {
+    border-color: #666; /* Odaklandığında sınır rengini değiştirebilirsiniz */
+}
 
         #result {
             margin-top: 20px;
@@ -43,11 +67,15 @@
             font-weight: bold;
         }
 
+
+
+
+
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Rüya Tabirleri</h1>
+        <h1 style="text-align: center;">Rüya Tabirleri</h1>
         <input type="text" id="dreamInput" placeholder="Rüyanızı yazın...">
         <div id="result"></div>
     </div>
@@ -160,22 +188,24 @@
     return `${subject} ${highlightedWords} ${phrase} ${action} ${highlightedOutcome}`;
 }
 
-        let timeout = null;
+       let timeout = null;
 
         document.getElementById('dreamInput').addEventListener('input', function() {
             clearTimeout(timeout);
             timeout = setTimeout(function() {
                 const inputText = document.getElementById('dreamInput').value.toLowerCase();
-if (inputText.trim() === "") {
-    document.getElementById('result').innerHTML = "Lütfen bir rüya yazın.";
-    return;
-}
+                if (inputText.trim() === "") {
+                    document.getElementById('result').innerHTML = "Lütfen bir rüya yazın.";
+                    return;
+                }
 
-const words = inputText.split(" "); // Kelimeleri ayır
-let result = generateRandomDreamInterpretation(words); // Tüm kelimeleri kullanarak tabir oluştur
-
+                const words = inputText.split(" "); // Kelimeleri ayır
+                let result = generateRandomDreamInterpretation(words); // Tüm kelimeleri kullanarak tabir oluştur
 
                 document.getElementById('result').innerHTML = result; // innerHTML kullanarak stil uygulanır
+                
+                // Input alanını temizle
+                document.getElementById('dreamInput').value = '';
             }, 3000); // 3 saniye bekleme süresi
         });
     </script>
@@ -184,5 +214,5 @@ let result = generateRandomDreamInterpretation(words); // Tüm kelimeleri kullan
 
 
 
-
+       
  
