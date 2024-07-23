@@ -22,7 +22,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 90%;
-            max-width: 300px;
+            max-width: 250px;
         }
 
         input {
@@ -155,7 +155,7 @@
     const action = getRandomElement(actions);
     const outcome = getRandomElement(outcomes);
     const phrase = getRandomElement(phrases);
-    const highlightedWords = words.map(word => `<span class="highlight-green">${word}</span>`).join(", ");
+    const highlightedWords = words.map(word => `<span class="highlight-green">${word}</span>`).join(" ");
     const highlightedOutcome = `<span class="highlight-green">${outcome}</span>`;
     return `${subject} ${highlightedWords} ${phrase} ${action} ${highlightedOutcome}`;
 }
