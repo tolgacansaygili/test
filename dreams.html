@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rüya Tabirleri</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: calc(100% - 22px);
+            box-sizing: border-box;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .highlight-green {
+            color: #000000;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rüya Tabirleri</h1>
+        <input type="text" id="dreamInput" placeholder="Rüyanızı yazın...">
+        <div id="result"></div>
+    </div>
+    <script>
+        const subjects = [
+            "Gördüğünüz rüya", "Bu rüya", "Bu düş", "Rüyanız", "Hayaliniz", "Bu imge", "Gördüğünüz düş",
+            "Hayalinizdeki bu şey", "Bu vizyon", "Düşünüz", "Bu sahne", "Rüyanızda gördüğünüz imge",
+            "Hayal alemindeki bu şey", "Düş dünyanızdaki bu imge", "Rüyada görülen bu şey", "Bu rüya senaryosu",
+            "Bu uyku hali", "Rüyanızdaki bu sembol", "Hayal dünyanızdaki bu sahne", "Bu gece gördüğünüz şey",
+            "Bu rüya sekansı", "Gözünüzün önüne gelen bu imge", "Rüyanızda beliren bu şey", "Bu hayal sekansı ",
+            "Düşlerinizdeki bu imge", "Rüyanızın bu kısmı", "Bu geceki hayaliniz", "Uyku alemindeki bu şey",
+            "Rüyanızda geçen bu şey", "Düşlerinizde beliren bu sahne", "Bu hayal dünyası", "Rüyanızda yaşadığınız durum",
+            "Bu rüya öğesi", "Gördüğünüz bu hayal", "Düşlerinizin bu parçası", "Rüyanızdaki bu sahne", "Bu hayal anı",
+            "Gözlerinizin önüne gelen bu şey", "Rüyanızda geçen bu imge", "Bu düş sekansı", "Rüyanızın bu kısmı",
+            "Bu gece rüyanızda gördüğünüz imge", "Uyandığınızda hatırladığınız bu şey", "Rüyanızda yaşadığınız şey",
+            "Bu rüya görüntüsü", "Rüyanızda gördüğünüz bu sembol", "Bu gece rüyanızda beliren öğe", "Düşlerinizde geçen bu şey",
+            "Bu hayal alemindeki şey", "Rüyanızdaki bu görüntü", "Bu düş alemindeki şey", "Bu rüya aleminde geçen sekans",
+            "Rüyanızda beliren bu görüntü", "Düş dünyanızda yaşanan bu şey", "Bu gece rüyanızda yaşadığınız şey", "Rüyanızda gördüğünüz bu sahne",
+            "Bu hayal alemindeki sahne", "Bu rüya dünyasında geçen", "Rüyanızda geçen bu görüntü", "Gördüğünüz bu düş sahnesi",
+            "Bu geceki rüyanızda karşılaştığınız simge", "Rüyanızda görünen bu şey", "Bu düş aleminde beliren sahne", "Bu rüya dünyasında yaşadığınız",
+            "Rüyanızdaki bu şey", "Bu gece gördüğünüz bu hayal", "Bu rüya alemindeki şey", "Düşlerinizdeki bu sembol",
+            "Rüyanızda görünen bu sahne", "Bu hayal dünyasındaki şey", "Rüyanızdaki bu görüntü", "Bu gece rüyanızda yaşanan",
+            "Bu rüya aleminde görünen sahne", "Düşlerinizde geçen bu sahne", "Rüyanızdaki bu sembol", "Bu gece gördüğünüz bu düş",
+            "Bu rüya dünyasında beliren şey", "Rüyanızda geçen şey", "Bu hayal alemindeki imge", "Rüyanızdaki bu şey",
+            "Bu gece rüyanızda geçen", "Düşlerinizdeki bu görüntü", "Bu rüya aleminde yaşadığınız", "Bu rüya dünyasında geçen şey",
+            "Rüyanızda görünen bu sembol", "Bu gece gördüğünüz rüya", "Bu hayal dünyasında beliren", "Düşlerinizde geçen bu görüntü",
+            "Rüyanızdaki bu sahne", "Bu gece rüyanızda görülen", "Bu rüya aleminde beliren imge", "Rüyanızda geçen bu sahne"
+        ];
+
+
+
+
+
+        const phrases = [
+            "ile ilgili ise", "konusundaysa", "hakkında ise", "doğrultusunda ise", "olarak belirmişse", "bağlamında ise",
+            "şeklinde ise", "biçiminde ise",  "olarak değerlendirildiğinde","bağlamında yorumlandığında", " bağlamında ele alındığında", "ile alakalıysa"
+        ];
+
+
+        const actions = [
+            "size", "hayatınıza", "geleceğinize", "kaderinize", "aşk hayatınıza", "kariyerinize", "ailenize", "arkadaşlık ilişkilerinize",
+            "iç dünyanıza", "sağlığınıza", "finansal durumunuza", "kişisel gelişiminize", "eğitiminize", "sosyal hayatınıza", "iş hayatınıza",
+            "ruhsal durumunuza", "günlük yaşamınıza", "kişisel ilişkilerinize", "yaratıcılığınıza", "özgüveninize", "fiziksel sağlığınıza",
+            "duygusal durumunuza", "ruhsal gelişiminize", "maddi durumunuza", "hayal dünyanıza", "enerjinize", "motivasyonunuza",
+            "mutluluğunuza", "ruhsal sağlığınıza", "kişisel hayatınıza", "psikolojik durumunuza", "duygusal sağlığınıza", "zihinsel sağlığınıza",
+            "ruh halinize", "genel sağlığınıza", "hayat felsefenize", "düşünce yapınıza", "aile ilişkilerinize", "dostluklarınıza",
+            "toplumsal hayatınıza", "kendi değerlerinize", "çevrenize", "hayatınıza bakış açınıza", "yaşam tarzınıza", "günlük alışkanlıklarınıza",
+            "moralinize", "duygusal bağlarınıza", "hayatınızdaki değişimlere", "gelecek planlarınıza", "günlük rutininize", "kişisel hedeflerinize",
+            "hayatınızdaki insanlara", "çalışma hayatınıza", "kişisel projelerinize", "hayatınızdaki önceliklere", "kişisel beklentilerinize",
+            "yaşamınızın kalitesine", "aile içindeki ilişkilere", "kişisel düşüncelerinize", "hayatınızdaki maceralara", "günlük motivasyonunuza",
+            "ruhsal yolculuğunuza", "düşünsel gelişiminize", "hayatınızdaki dönüm noktalarına", "kişisel başarılarınıza", "hayatınızdaki hedeflere",
+            "gelecek beklentilerinize", "yaşamınızdaki ilişkilere", "kişisel duygularınıza", "hayatınızdaki sorunlara", "kişisel mutluluğunuza",
+            "hayatınızdaki başarılara", "ruhsal huzurunuza", "günlük yaşam alışkanlıklarınıza", "kişisel kararlarınıza", "hayatınızdaki olaylara",
+            "kişisel değişimlerinize", "hayatınızdaki insan ilişkilerine", "günlük yaşamınızdaki detaylara", "kişisel yeteneklerinize",
+            "hayatınızdaki beklentilere", "ruhsal hedeflerinize", "günlük yaşamınızdaki etkilere", "kişisel gelişim hedeflerinize",
+            "hayatınızdaki yeniliklere", "kişisel karar süreçlerinize", "hayatınızdaki dönüşümlere", "kişisel farkındalığınıza", "hayatınızdaki keşiflere",
+            "günlük yaşamınızdaki değişimlere", "kişisel içgörülerinize", "hayatınızdaki anlayışa", "ruhsal huzurunuza"
+        ];
+
+        const outcomes = [
+    "pozitif bir değişim getirecek.", "beklenmedik bir fırsat sunacak.", "yeni bir başlangıç anlamına gelir.", "sürpriz gelişmelerle dolu olacak.",
+    "hayatınızı olumlu yönde etkileyecek.", "başarı kapılarını açacak.", "olumlu sonuçlar doğuracak.", "mutlu bir döneme gireceğinizi gösterir.",
+    "pozitif bir dönüşüm sağlayacak.", "iyileştirici etkisi olacak.", "güzel günler yaşayacaksınız.", "yeni bir döneme gireceksiniz.",
+    "başarıya ulaşacaksınız.", "mutluluk getirecek.", "hayatınızda yeni kapılar açılacak.", "olumlu bir değişim yaşayacaksınız.",
+    "pozitif sonuçlar elde edeceksiniz.", "başarılı bir döneme gireceksiniz.", "mutlu günler göreceksiniz.", "yeniliklerle dolu olacak.",
+    "pozitif bir enerji getirecek.", "güzel sonuçlar doğuracak.", "mutlu ve huzurlu olacaksınız.", "hayatınıza anlam katacak.",
+    "pozitif gelişmeler yaşayacaksınız.", "mutlu ve başarılı bir dönem geçireceksiniz.", "yeni fırsatlar getirecek.", "başarı ve mutluluk getirecek.",
+    "güzel bir değişim yaşayacaksınız.", "olumlu bir süreç başlayacak.", "mutlu ve huzurlu günler yaşayacaksınız.", "yeni başlangıçlar yapacaksınız.",
+    "pozitif etkileri olacak.", "başarı ve mutluluk getirecek.", "hayatınızda yeni bir döneme gireceksiniz.", "güzel gelişmeler olacak.",
+    "pozitif bir değişim olacak.", "mutlu bir dönem geçireceksiniz.", "yeni fırsatlar sunacak.", "başarıya ulaşacaksınız.",
+    "güzel sonuçlar elde edeceksiniz.", "mutlu ve huzurlu olacaksınız.", "hayatınızda yeni kapılar açılacak.", "olumlu sonuçlar elde edeceksiniz.",
+    "pozitif bir enerji getirecek.", "başarı ve mutluluk getirecek.", "güzel günler göreceksiniz.", "yeni bir döneme gireceksiniz.",
+    "pozitif bir dönüşüm sağlayacak.", "mutlu ve huzurlu olacaksınız.", "hayatınıza anlam katacak.", "olumlu gelişmeler yaşayacaksınız.",
+    "başarı ve mutluluk getirecek.", "pozitif sonuçlar elde edeceksiniz.", "mutlu ve başarılı bir dönem geçireceksiniz.", "yeni fırsatlar getirecek.",
+    "başarı kapılarını açacak.", "pozitif bir değişim yaşayacaksınız.", "mutlu ve huzurlu günler göreceksiniz.", "yeni başlangıçlar yapacaksınız.",
+    "güzel sonuçlar doğuracak.", "pozitif bir enerji getirecek.", "başarı ve mutluluk getirecek.", "hayatınızda yeni bir döneme gireceksiniz.",
+    "pozitif bir dönüşüm sağlayacak.", "mutlu ve huzurlu olacaksınız.", "hayatınıza anlam katacak.", "olumlu gelişmeler yaşayacaksınız.",
+    "başarı ve mutluluk getirecek.", "pozitif sonuçlar elde edeceksiniz.", "mutlu ve başarılı bir dönem geçireceksiniz.", "yeni fırsatlar getirecek.",
+    "başarı kapılarını açacak.", "pozitif bir değişim yaşayacaksınız.", "mutlu ve huzurlu günler göreceksiniz.", "yeni başlangıçlar yapacaksınız.",
+    "güzel sonuçlar doğuracak.", "pozitif bir enerji getirecek.", "başarı ve mutluluk getirecek.", "hayatınızda yeni bir döneme gireceksiniz.",
+    "pozitif bir dönüşüm sağlayacak.", "mutlu ve huzurlu olacaksınız.", "hayatınıza anlam katacak.", "olumlu gelişmeler yaşayacaksınız.",
+    "beklenmedik zorluklar getirebilir.", "dikkatli olmanız gerektiğini gösterir.", "küçük engellerle karşılaşabilirsiniz.", "sabırlı olmanızı gerektirebilir.",
+    "olumsuzluklarla başa çıkmanız gerekecek.", "tedbirli olmanızı işaret eder.", "dikkatli adımlar atmanız gerektiğini gösterir.", "bazı gecikmeler yaşanabilir.",
+    "ufak aksilikler olabilir.", "planlarınızda değişiklik yapmanız gerekebilir.", "bazı belirsizlikler olabilir.", "dikkatli olmanız gereken bir dönemdesiniz.",
+    "biraz daha sabırlı olmalısınız.", "küçük sorunlarla karşılaşabilirsiniz.", "bazı engellerle başa çıkmanız gerekebilir.", "biraz daha dikkatli olmalısınız.",
+    "dikkatli olmanız gereken bir süreç.", "ufak tefek aksilikler olabilir.", "sabırlı olmanızı gerektiren durumlar olabilir.", "bazı zorluklarla karşılaşabilirsiniz.",
+    "biraz daha temkinli olmalısınız.", "beklenmedik zorluklar olabilir.", "biraz daha dikkatli olmanız gerekebilir.", "planlarınızda bazı değişiklikler olabilir.",
+    "ufak tefek aksiliklerle başa çıkmanız gerekebilir.", "biraz daha dikkatli ve sabırlı olmalısınız.", "bazı belirsizliklerle karşılaşabilirsiniz.",
+    "dikkatli olmanız gereken bir süreç olabilir.", "küçük sorunlarla karşılaşabilirsiniz.", "sabırlı olmanızı gerektirebilir.", "bazı engellerle başa çıkmanız gerekebilir.",
+    "biraz daha dikkatli ve temkinli olmalısınız.", "beklenmedik zorluklar ve engeller olabilir.", "biraz daha sabırlı ve dikkatli olmalısınız.",
+    "planlarınızda bazı değişiklikler ve gecikmeler olabilir.", "ufak tefek aksiliklerle karşılaşabilirsiniz.", "biraz daha dikkatli ve sabırlı olmalısınız.",
+    "bazı belirsizliklerle karşılaşabilirsiniz.", "dikkatli olmanız gereken bir süreç olabilir.", "küçük sorunlarla başa çıkmanız gerekebilir.",
+    "sabırlı olmanızı gerektirebilir.", "bazı engellerle başa çıkmanız gerekebilir.", "biraz daha dikkatli ve temkinli olmalısınız.", "beklenmedik zorluklar olabilir."
+];
+
+
+
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateRandomDreamInterpretation(words) {
+    const subject = getRandomElement(subjects);
+    const action = getRandomElement(actions);
+    const outcome = getRandomElement(outcomes);
+    const phrase = getRandomElement(phrases);
+    const highlightedWords = words.map(word => `<span class="highlight-green">${word}</span>`).join(", ");
+    const highlightedOutcome = `<span class="highlight-green">${outcome}</span>`;
+    return `${subject} ${highlightedWords} ${phrase} ${action} ${highlightedOutcome}`;
+}
+
+        let timeout = null;
+
+        document.getElementById('dreamInput').addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                const inputText = document.getElementById('dreamInput').value.toLowerCase();
+if (inputText.trim() === "") {
+    document.getElementById('result').innerHTML = "Lütfen bir rüya yazın.";
+    return;
+}
+
+const words = inputText.split(" "); // Kelimeleri ayır
+let result = generateRandomDreamInterpretation(words); // Tüm kelimeleri kullanarak tabir oluştur
+
+
+                document.getElementById('result').innerHTML = result; // innerHTML kullanarak stil uygulanır
+            }, 3000); // 3 saniye bekleme süresi
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+ 
