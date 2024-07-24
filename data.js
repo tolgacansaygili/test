@@ -399,12 +399,10 @@ const bannedWords = [
 "anasını",
 "anasının am",
 "anası orospu",
-
 "anasinin",
 "anay",
 "anayin",
 "angut",
-
 "anuna",
 "aptal",
 "aq",
@@ -421,12 +419,10 @@ const bannedWords = [
 "azdım",
 "azdır",
 "azdırıcı",
- 
-"babani",
+ "babani",
 "babası pezevenk",
 "bacağına sıçayım",
 "bastard",
-
 "bızır",
 "bitchv"
 "abaza",
@@ -1055,5 +1051,4 @@ const bannedWords = [
 "xikeyim",
 "yaaraaa",
 "yalamav",
-
 ];
