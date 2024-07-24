@@ -175,5 +175,5 @@ const outcomesDetails = [
 
 
 const bannedWords = [
-    "am", "göt", "sik", "amcık", "yarrak", "yarak", "bok", "sikiş", "sikişmek", "döl", "penis", 
+    "am", "göt", "sik", "amcık", "yarrak", "yarak", "bok", "sikiş", "sikişmek", "döl", "penis",  "sikme",  "sikmek", "siki", "sikil", "sikilmek", "sikilen", "yarağı", "yarağını", "yarağna", "yarrağı", "yarrağını", "yarrağına", "yarağında", "yarrağında", "yarağından", "yarrağından", "sikine", "sikinden", "sikiliyor", "sikişiyor", "sikil", "atmık", "meni", "sperm", "orospu", "fahişe", "kaltak", 
 ];
