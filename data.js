@@ -175,5 +175,5 @@ const outcomesDetails = [
 
 
 const bannedWords = [
-    "yasaklı1", "yasaklı2", "yasaklı3"
+    "am", "göt", "sik", "amcık", "yarrak", "yarak", "bok", "sikiş", "sikişmek", "döl", "penis", 
 ];
