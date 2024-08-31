@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesler ve Müzik</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            text-align: center;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #000000;
+            margin-bottom: 20px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        label {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            background-color: #4a90e2;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        label:hover {
+            background-color: #357ABD;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 25px;
+            background-color: #808080; /* Gri renk */
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #A9A9A9; /* Daha açık gri */
+        }
+
+        button.active {
+            background-color: #000000; /* Aktif buton için sarı */
+        }
+
+        #playlist {
+            list-style: none;
+            padding: 0;
+            max-width: 300px;
+            max-height: 200px; /* iPhone ekranına uygun yüksekliği sağlamak için */
+            margin: 0 auto;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow-y: auto; /* Dikey kaydırma ekler */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #playlist li {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #playlist li:last-child {
+            border-bottom: none;
+        }
+
+        #playlist li.active {
+            background-color: #ffe066; /* Çalan şarkı için sarı vurgu */
+        }
+
+        #playlist li:hover {
+            background-color: #f1f1f1;
+        }
+
+        #audioPlayer {
+            display: none; /* Gizli tut çünkü kontrol ediyoruz */
+        }
+
+        #progressBar {
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        #progressBar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #progressBar::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <h2>MP3 Player</h2>
+    <input type="file" id="fileInput" accept=".mp3" multiple />
+    <label for="fileInput">MP3 Dosyaları Seç</label>
+    <div class="controls">
+        <button id="playPause" class="active">Oynat</button>
+        <button id="nextTrack">İleri</button>
+        <button id="prevTrack">Geri</button>
+    </div>
+    <div class="controls">
+        <button id="repeatMode">Tümünü Tekrarla</button>
+        <button id="shuffle">Karıştır</button>
+    </div>
+    <input type="range" id="progressBar" value="0" min="0" max="100">
+    <ul id="playlist"></ul>
+    <audio id="audioPlayer"></audio>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseButton = document.getElementById('playPause');
+        const prevTrackButton = document.getElementById('prevTrack');
+        const nextTrackButton = document.getElementById('nextTrack');
+        const repeatButton = document.getElementById('repeatMode');
+        const shuffleButton = document.getElementById('shuffle');
+        const playlist = document.getElementById('playlist');
+        const progressBar = document.getElementById('progressBar');
+
+        let tracks = [];
+        let currentTrackIndex = -1; // Başlangıçta hiçbir şarkı seçili değil
+        let repeatMode = 'all'; // all, one, none
+        let isShuffle = false;
+        let isDragging = false;
+
+        // Dosyalar seçildiğinde listeye ekle
+        fileInput.addEventListener('change', (event) => {
+            const files = Array.from(event.target.files);
+            files.forEach((file) => {
+                if (file.type === 'audio/mpeg') {
+                    const fileURL = URL.createObjectURL(file);
+                    tracks.push({ name: file.name, url: fileURL });
+                    const listItem = document.createElement('li');
+                    listItem.textContent = file.name;
+                    listItem.addEventListener('click', () => {
+                        const index = Array.from(playlist.children).indexOf(listItem);
+                        currentTrackIndex = index; // Tıklanan şarkıyı seç
+                        playTrack(currentTrackIndex);
+                    });
+                    listItem.addEventListener('dblclick', () => {
+                        const index = Array.from(playlist.children).indexOf(listItem);
+                        tracks.splice(index, 1); // Şarkıyı listeden sil
+                        listItem.remove();
+                        if (index === currentTrackIndex) {
+                            audioPlayer.pause();
+                            playPauseButton.textContent = 'Oynat';
+                            currentTrackIndex = -1; // Hiçbir şarkı seçilmesin
+                        } else if (index < currentTrackIndex) {
+                            currentTrackIndex--;
+                        }
+                    });
+                    playlist.appendChild(listItem);
+                } else {
+                    alert('Lütfen sadece MP3 dosyaları seçin.');
+                }
+            });
+        });
+
+        // Çalma işlemi tamamlandığında bir sonraki parçayı çal
+        audioPlayer.addEventListener('ended', () => {
+            handleEnd();
+        });
+
+        // Play/Pause butonuna basıldığında
+        playPauseButton.addEventListener('click', () => {
+            if (currentTrackIndex === -1 && tracks.length > 0) {
+                // Hiçbir şarkı seçilmediyse ilk şarkıyı çal
+                currentTrackIndex = 0;
+                playTrack(currentTrackIndex);
+            } else if (audioPlayer.paused && tracks.length > 0) {
+                audioPlayer.play();
+                playPauseButton.classList.add('active');
+                playPauseButton.textContent = 'Duraklat';
+            } else {
+                audioPlayer.pause();
+                playPauseButton.classList.remove('active');
+                playPauseButton.textContent = 'Oynat';
+            }
+        });
+
+        // Önceki şarkıya geçiş yap
+        prevTrackButton.addEventListener('click', () => {
+            if (currentTrackIndex > 0) {
+                currentTrackIndex--;
+                playTrack(currentTrackIndex);
+            } else if (repeatMode === 'all') {
+                currentTrackIndex = tracks.length - 1;
+                playTrack(currentTrackIndex);
+            }
+        });
+
+        // Sonraki şarkıya geçiş yap
+        nextTrackButton.addEventListener('click', () => {
+            nextTrack();
+        });
+
+        // Repeat Mode değiştir
+        repeatButton.addEventListener('click', () => {
+            switch (repeatMode) {
+                case 'all':
+                    repeatMode = 'one';
+                    repeatButton.classList.add('active');
+                    repeatButton.textContent = 'Birini Tekrarla';
+                    break;
+                case 'one':
+                    repeatMode = 'none';
+                    repeatButton.classList.remove('active');
+                    repeatButton.textContent = 'Tekrarlama';
+                    break;
+                default:
+                    repeatMode = 'all';
+                    repeatButton.classList.add('active');
+                    repeatButton.textContent = 'Tümünü Tekrarla';
+            }
+        });
+
+        // Shuffle Mode değiştir
+        shuffleButton.addEventListener('click', () => {
+            isShuffle = !isShuffle;
+            if (isShuffle) {
+                shuffleButton.classList.add('active');
+                shuffleButton.textContent = 'Karışık Çalınıyor';
+            } else {
+                shuffleButton.classList.remove('active');
+                shuffleButton.textContent = 'Karıştır';
+            }
+        });
+
+        // Şarkıyı oynat ve aktif şarkıyı vurgula
+        function playTrack(index) {
+            // Önce tüm öğelerin vurgulamasını kaldır
+            Array.from(playlist.children).forEach((item, i) => {
+                item.classList.remove('active');
+                if (i === index) {
+                    item.classList.add('active'); // Çalan şarkıyı vurgula
+                }
+            });
+
+            audioPlayer.src = tracks[index].url;
+            audioPlayer.play();
+            playPauseButton.classList.add('active');
+            playPauseButton.textContent = 'Duraklat';
+        }
+
+        // Sonraki şarkıyı oynat
+        function nextTrack() {
+            if (isShuffle) {
+                currentTrackIndex = Math.floor(Math.random() * tracks.length);
+            } else if (currentTrackIndex < tracks.length - 1) {
+                currentTrackIndex++;
+            } else if (repeatMode === 'all') {
+                currentTrackIndex = 0;
+            } else {
+                return;
+            }
+            playTrack(currentTrackIndex);
+        }
+
+        // Şarkı sona erdiğinde davranış
+        function handleEnd() {
+            if (repeatMode === 'one') {
+                playTrack(currentTrackIndex);
+            } else {
+                nextTrack();
+            }
+        }
+
+        // İlerleme çubuğunu güncelle
+        audioPlayer.addEventListener('timeupdate', () => {
+            if (!isDragging) {
+                progressBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            }
+        });
+
+        // İlerleme çubuğunda sürükleme başladığında
+        progressBar.addEventListener('input', () => {
+            isDragging = true;
+        });
+
+        // Sürükleme bittiğinde
+        progressBar.addEventListener('change', () => {
+            isDragging = false;
+            audioPlayer.currentTime = (progressBar.value / 100) * audioPlayer.duration;
+        });
+    </script>
+</body>
+</html>
