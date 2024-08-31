@@ -15,7 +15,7 @@
             padding: 20px;
         }
 
-        h1 {
+        h2 {
             color: #000000;
             margin-bottom: 20px;
         }
@@ -25,14 +25,15 @@
         }
 
         label {
-            display: inline-block;
+            display: block;
             padding: 10px 20px;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             background-color: #4a90e2;
             color: white;
-            border-radius: 25px;
+            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            text-align: center;
         }
 
         label:hover {
@@ -41,64 +42,29 @@
 
         .controls {
             display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
             flex-wrap: wrap;
+            gap: 0;
+            margin-bottom: 10px;
         }
 
-        button {
-            padding: 10px 15px;
+        .controls button {
+            flex: 1; /* Butonların eşit genişlikte olmasını sağlar */
+            padding: 15px 0;
             border: none;
-            border-radius: 25px;
+            border-radius: 0; /* Yuvarlak köşeleri kaldırır */
             background-color: #808080;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
+            text-align: center; /* Metni ortalar */
         }
 
-        button:hover {
+        .controls button:hover {
             background-color: #A9A9A9;
         }
 
-        button.active {
+        .controls button.active {
             background-color: #000000;
-        }
-
-        #playlist {
-            list-style: none;
-            padding: 0;
-            max-width: 300px;
-            max-height: 200px;
-            margin: 0 auto;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            overflow-y: auto;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        #playlist li {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        #playlist li:last-child {
-            border-bottom: none;
-        }
-
-        #playlist li.active {
-            background-color: #ffe066;
-        }
-
-        #playlist li:hover {
-            background-color: #f1f1f1;
-        }
-
-        #audioPlayer {
-            display: none;
         }
 
         #progressBar {
@@ -139,15 +105,18 @@
     <h2>MP3 Player</h2>
     <input type="file" id="fileInput" accept=".mp3" multiple />
     <label for="fileInput">MP3 Dosyaları Seç</label>
+
     <div class="controls">
         <button id="playPause" class="active">Oynat</button>
         <button id="nextTrack">İleri</button>
         <button id="prevTrack">Geri</button>
     </div>
+
     <div class="controls">
-        <button id="repeatMode">Tümünü Tekrarla</button>
+        <button id="repeatMode">Tekrarla</button>
         <button id="shuffle">Karıştır</button>
     </div>
+
     <input type="range" id="progressBar" value="0" min="0" max="100">
     <ul id="playlist"></ul>
     <audio id="audioPlayer"></audio>
@@ -327,57 +296,52 @@
             audioPlayer.currentTime = (progressBar.value / 100) * audioPlayer.duration;
         });
 
-// MediaSession API desteği ekle
-if ('mediaSession' in navigator) {
-    navigator.mediaSession.metadata = new MediaMetadata({
-        title: tracks[currentTrackIndex]?.name || 'MP3 Player',
-        artist: 'Artist Name', // Gerekirse sanatçı adını ekleyin
-        album: 'Album Name', // Gerekirse albüm adını ekleyin
-        artwork: [
-            { src: 'path/to/your/artwork.png', sizes: '96x96', type: 'image/png' },
-            { src: 'path/to/your/artwork.png', sizes: '128x128', type: 'image/png' },
-            { src: 'path/to/your/artwork.png', sizes: '192x192', type: 'image/png' },
-            { src: 'path/to/your/artwork.png', sizes: '256x256', type: 'image/png' },
-            { src: 'path/to/your/artwork.png', sizes: '384x384', type: 'image/png' },
-            { src: 'path/to/your/artwork.png', sizes: '512x512', type: 'image/png' },
-        ]
-    });
+        // MediaSession API desteği ekle
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: tracks[currentTrackIndex]?.name || 'MP3 Player',
+                artist: 'Artist Name',
+                album: 'Album Name',
+                artwork: [
+                    { src: 'path/to/your/artwork.png', sizes: '96x96', type: 'image/png' },
+                    { src: 'path/to/your/artwork.png', sizes: '128x128', type: 'image/png' },
+                    { src: 'path/to/your/artwork.png', sizes: '192x192', type: 'image/png' },
+                    { src: 'path/to/your/artwork.png', sizes: '256x256', type: 'image/png' },
+                    { src: 'path/to/your/artwork.png', sizes: '384x384', type: 'image/png' },
+                    { src: 'path/to/your/artwork.png', sizes: '512x512', type: 'image/png' },
+                ]
+            });
 
-    // Oynatmayı başlat
-    navigator.mediaSession.setActionHandler('play', () => {
-        if (audioPlayer.paused) {
-            audioPlayer.play();
-            playPauseButton.classList.add('active');
-            playPauseButton.textContent = 'Duraklat';
+            navigator.mediaSession.setActionHandler('play', () => {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    playPauseButton.classList.add('active');
+                    playPauseButton.textContent = 'Duraklat';
+                }
+            });
+
+            navigator.mediaSession.setActionHandler('pause', () => {
+                if (!audioPlayer.paused) {
+                    audioPlayer.pause();
+                    playPauseButton.classList.remove('active');
+                    playPauseButton.textContent = 'Oynat';
+                }
+            });
+
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+                if (currentTrackIndex > 0) {
+                    currentTrackIndex--;
+                    playTrack(currentTrackIndex);
+                } else if (repeatMode === 'all') {
+                    currentTrackIndex = tracks.length - 1;
+                    playTrack(currentTrackIndex);
+                }
+            });
+
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+                nextTrack();
+            });
         }
-    });
-
-    // Oynatmayı durdur
-    navigator.mediaSession.setActionHandler('pause', () => {
-        if (!audioPlayer.paused) {
-            audioPlayer.pause();
-            playPauseButton.classList.remove('active');
-            playPauseButton.textContent = 'Oynat';
-        }
-    });
-
-    // Önceki parçaya geç
-    navigator.mediaSession.setActionHandler('previoustrack', () => {
-        if (currentTrackIndex > 0) {
-            currentTrackIndex--;
-            playTrack(currentTrackIndex);
-        } else if (repeatMode === 'all') {
-            currentTrackIndex = tracks.length - 1;
-            playTrack(currentTrackIndex);
-        }
-    });
-
-    // Sonraki parçaya geç
-    navigator.mediaSession.setActionHandler('nexttrack', () => {
-        nextTrack();
-    });
-}
-
     </script>
 </body>
 </html>
