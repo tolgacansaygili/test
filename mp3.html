@@ -135,6 +135,14 @@
             background-color: #f1f1f1;
         }
 
+        #timeDisplay {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
 
 
     </style>
@@ -156,6 +164,10 @@
     </div>
 
     <input type="range" id="progressBar" value="0" min="0" max="100">
+    <div id="timeDisplay">
+    <span id="currentTime">00:00</span> / <span id="totalTime">00:00</span>
+</div>
+
     <ul id="playlist"></ul>
     <audio id="audioPlayer"></audio>
 
@@ -380,6 +392,34 @@
                 nextTrack();
             });
         }
+
+
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const totalTimeDisplay = document.getElementById('totalTime');
+
+        // Şarkı başladığında toplam süreyi göster
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            totalTimeDisplay.textContent = formatTime(audioPlayer.duration);
+        });
+
+        // Süre güncellenirken mevcut zamanı göster
+        audioPlayer.addEventListener('timeupdate', () => {
+            if (!isDragging) {
+                progressBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            }
+            currentTimeDisplay.textContent = formatTime(audioPlayer.currentTime);
+        });
+
+        // Formatlama fonksiyonu
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+
+
+        
     </script>
 </body>
 </html>
