@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesler ve Müzik</title>
+    <title>MP3 Player</title>
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
@@ -328,6 +328,41 @@
             isDragging = false;
             audioPlayer.currentTime = (progressBar.value / 100) * audioPlayer.duration;
         });
+
+if ('mediaSession' in navigator) {
+    navigator.mediaSession.setActionHandler('play', () => {
+        if (audioPlayer.paused) {
+            audioPlayer.play();
+            playPauseButton.classList.add('active');
+            playPauseButton.textContent = 'Duraklat';
+        }
+    });
+
+    navigator.mediaSession.setActionHandler('pause', () => {
+        if (!audioPlayer.paused) {
+            audioPlayer.pause();
+            playPauseButton.classList.remove('active');
+            playPauseButton.textContent = 'Oynat';
+        }
+    });
+
+    navigator.mediaSession.setActionHandler('previoustrack', () => {
+        if (currentTrackIndex > 0) {
+            currentTrackIndex--;
+            playTrack(currentTrackIndex);
+        } else if (repeatMode === 'all') {
+            currentTrackIndex = tracks.length - 1;
+            playTrack(currentTrackIndex);
+        }
+    });
+
+    navigator.mediaSession.setActionHandler('nexttrack', () => {
+        nextTrack();
+    });
+}
+
+
+        
     </script>
 </body>
 </html>
