@@ -330,9 +330,9 @@
 // MediaSession API desteği ekle
 if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
-        title: 'MP3 Player',
-        artist: 'Your Artist',
-        album: 'Your Album',
+        title: tracks[currentTrackIndex]?.name || 'MP3 Player',
+        artist: 'Artist Name', // Gerekirse sanatçı adını ekleyin
+        album: 'Album Name', // Gerekirse albüm adını ekleyin
         artwork: [
             { src: 'path/to/your/artwork.png', sizes: '96x96', type: 'image/png' },
             { src: 'path/to/your/artwork.png', sizes: '128x128', type: 'image/png' },
@@ -343,6 +343,7 @@ if ('mediaSession' in navigator) {
         ]
     });
 
+    // Oynatmayı başlat
     navigator.mediaSession.setActionHandler('play', () => {
         if (audioPlayer.paused) {
             audioPlayer.play();
@@ -351,6 +352,7 @@ if ('mediaSession' in navigator) {
         }
     });
 
+    // Oynatmayı durdur
     navigator.mediaSession.setActionHandler('pause', () => {
         if (!audioPlayer.paused) {
             audioPlayer.pause();
@@ -359,6 +361,7 @@ if ('mediaSession' in navigator) {
         }
     });
 
+    // Önceki parçaya geç
     navigator.mediaSession.setActionHandler('previoustrack', () => {
         if (currentTrackIndex > 0) {
             currentTrackIndex--;
@@ -369,6 +372,7 @@ if ('mediaSession' in navigator) {
         }
     });
 
+    // Sonraki parçaya geç
     navigator.mediaSession.setActionHandler('nexttrack', () => {
         nextTrack();
     });
