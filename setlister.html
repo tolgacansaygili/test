@@ -66,6 +66,9 @@
         .delete-button:hover {
             background-color: darkred;
         }
+        .draggable {
+            cursor: move;
+        }
         @media (max-width: 600px) {
             input, button {
                 font-size: 14px;
@@ -76,121 +79,183 @@
 </head>
 <body>
 
-    <h1>Setlist Oluşturucu</h1>
+<h1>Setlist Oluşturucu</h1>
 
-    <!-- Süre Girişi -->
-    <label for="sureLimit">Toplam Setlist Süresi (dakika):</label>
-    <input type="number" id="sureLimit" value="45" min="1" placeholder="Toplam süre girin">
+<!-- Süre Girişi -->
+<label for="sureLimit">Toplam Setlist Süresi (dakika):</label>
+<input type="number" id="sureLimit" value="45" min="1" placeholder="Toplam süre girin">
 
-    <!-- Şarkı Adı Girişi -->
-    <label for="sarkiAdi">Şarkı Adı:</label>
-    <input type="text" id="sarkiAdi" placeholder="Şarkı adı girin">
+<!-- Şarkı Adı Girişi -->
+<label for="sarkiAdi">Şarkı Adı:</label>
+<input type="text" id="sarkiAdi" placeholder="Şarkı adı girin">
 
-    <!-- Şarkı Süresi Girişi -->
-    <label for="sarkiSure">Şarkı Süresi (dakika):</label>
-    <input type="number" id="sarkiSure" placeholder="Şarkı süresini girin">
+<!-- Şarkı Süresi Girişi -->
+<label for="sarkiSure">Şarkı Süresi (dakika:saniye):</label>
+<input type="text" id="sarkiSure" placeholder="Süre (örn. 2:16 veya 2.16)">
 
-    <!-- Şarkı Ekle Butonu -->
-    <button onclick="sarkiEkle()">Şarkı Ekle</button>
+<!-- Şarkı Ekle Butonu -->
+<button onclick="sarkiEkle()">Şarkı Ekle</button>
 
-    <!-- Toplam Süre Görüntüleme -->
-    <div id="total-time">Toplam Süre: 0 dakika</div>
+<!-- Toplam Süre Görüntüleme -->
+<div id="total-time">Toplam Süre: 0 dakika</div>
 
-    <!-- Setlist Görüntüleme -->
-    <ul id="setlist"></ul>
+<!-- Setlist Görüntüleme -->
+<ul id="setlist"></ul>
 
-    <!-- Export ve Import Butonları -->
-    <input type="file" id="fileInput" accept=".txt" style="display: none;" onchange="importList(event)">
-    <button onclick="document.getElementById('fileInput').click()">Listeyi İçe Aktar</button>
-    <button onclick="exportList()">Listeyi Dışa Aktar</button>
+<!-- Export ve Import Butonları -->
+<input type="file" id="fileInput" accept=".txt" style="display: none;" onchange="importList(event)">
+<button onclick="document.getElementById('fileInput').click()">Listeyi İçe Aktar</button>
+<button onclick="exportList()">Listeyi Dışa Aktar</button>
 
-    <script>
-        // Şarkılar listesini tutmak için bir array
-        let sarkilar = [];
+<!-- URL'den İçe Aktarma -->
+<input type="text" id="urlInput" placeholder="URL'den listeyi yükle">
+<button onclick="importFromURL()">URL'den İçe Aktar</button>
 
-        // Şarkı ekleme fonksiyonu
-        function sarkiEkle() {
-            const sarkiAdi = document.getElementById('sarkiAdi').value;
-            const sarkiSure = parseFloat(document.getElementById('sarkiSure').value);
+<!-- PDF Olarak Kaydet ve Yazdır -->
+<button onclick="exportPDF()">PDF Olarak Kaydet</button>
+<button onclick="window.print()">Yazdır</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script>
+    let sarkilar = [];
+
+    // Şarkı ekleme fonksiyonu
+    function sarkiEkle() {
+        const sarkiAdi = document.getElementById('sarkiAdi').value;
+        let sarkiSure = document.getElementById('sarkiSure').value.replace(':', '.');
+        const sureLimit = parseFloat(document.getElementById('sureLimit').value);
+
+        if (!sarkiAdi || !isValidTimeFormat(sarkiSure)) {
+            alert('Lütfen geçerli bir şarkı adı ve süre girin.');
+            return;
+        }
+
+        sarkiSure = parseFloat(sarkiSure).toFixed(2);
+
+        const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
+        if (toplamSure + parseFloat(sarkiSure) > sureLimit) {
+            alert(`Toplam süre ${sureLimit} dakikayı aşamaz!`);
+            return;
+        }
+
+        sarkilar.push({ isim: sarkiAdi, sure: parseFloat(sarkiSure) });
+        listeGuncelle();
+
+        document.getElementById('sarkiAdi').value = '';
+        document.getElementById('sarkiSure').value = '';
+    }
+
+    // Şarkı süresi formatını kontrol eden fonksiyon
+    function isValidTimeFormat(time) {
+        const regex = /^(\d{1,2}(\.\d{1,2})?)$/; // "." formatı için
+        const regexColon = /^(\d{1,2}:\d{1,2})$/; // ":" formatı için
+
+        if (regex.test(time) || regexColon.test(time)) {
+            return true;
+        } else {
+            alert('Geçerli bir süre formatı giriniz (örneğin 2:16, 02.16).');
+            return false;
+        }
+    }
+
+    // Listeyi güncelleyen fonksiyon
+    function listeGuncelle() {
+        const setlistElement = document.getElementById('setlist');
+        setlistElement.innerHTML = '';
+
+        sarkilar.forEach((sarki, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${sarki.isim} - ${sarki.sure.toFixed(2)} dakika`;
+            li.className = 'draggable';
+            li.draggable = true;
+
+            // Sürükle bırak ile yer değiştirme
+            li.ondragstart = (event) => {
+                event.dataTransfer.setData('text', index);
+            };
+            li.ondragover = (event) => event.preventDefault();
+            li.ondrop = (event) => {
+                const draggedIndex = event.dataTransfer.getData('text');
+                const droppedIndex = index;
+                const draggedItem = sarkilar[draggedIndex];
+                sarkilar.splice(draggedIndex, 1);
+                sarkilar.splice(droppedIndex, 0, draggedItem);
+                listeGuncelle();
+            };
+
+            // Sil butonu oluşturma
+            const silButonu = document.createElement('button');
+            silButonu.textContent = 'Sil';
+            silButonu.className = 'delete-button';
+            silButonu.onclick = () => sarkiSil(index);
+
+            li.appendChild(silButonu);
+            setlistElement.appendChild(li);
+        });
+
+        const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
+        document.getElementById('total-time').textContent = `Toplam Süre: ${toplamSure.toFixed(2)} dakika`;
+
+        if (sarkilar.length > 10) {
+            setlistElement.style.overflowY = 'scroll';
+        } else {
+            setlistElement.style.overflowY = 'hidden';
+        }
+    }
+
+    // Şarkıyı listeden silen fonksiyon
+    function sarkiSil(index) {
+        sarkilar.splice(index, 1);
+        listeGuncelle();
+    }
+
+    // Listeyi dışa aktarma fonksiyonu
+    function exportList() {
+        const exportText = sarkilar.map(sarki => `${sarki.isim},${sarki.sure.toFixed(2)}`).join('\n');
+        const blob = new Blob([exportText], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'setlist.txt';
+        link.click();
+    }
+
+    // Listeyi içe aktarma fonksiyonu
+    function importList(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const importedLines = e.target.result.split('\n');
+            const newSarkilar = importedLines.map(line => {
+                const [isim, sure] = line.split(',');
+                return { isim: isim.trim(), sure: parseFloat(sure) };
+            }).filter(sarki => sarki.isim && !isNaN(sarki.sure));
+
+            const toplamSure = newSarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
             const sureLimit = parseFloat(document.getElementById('sureLimit').value);
 
-            // Şarkı adı ve süresi kontrolü
-            if (!sarkiAdi || isNaN(sarkiSure) || sarkiSure <= 0) {
-                alert('Lütfen geçerli bir şarkı adı ve süre girin.');
+            if (toplamSure > sureLimit) {
+                alert(`İçe aktarılan liste toplam süresi ${sureLimit} dakikayı aşıyor!`);
                 return;
             }
 
-            // Toplam süre kontrolü
-            const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
-            if (toplamSure + sarkiSure > sureLimit) {
-                alert(`Toplam süre ${sureLimit} dakikayı aşamaz!`);
-                return;
-            }
-
-            // Şarkıyı listeye ekleme
-            sarkilar.push({ isim: sarkiAdi, sure: sarkiSure });
+            sarkilar = newSarkilar;
             listeGuncelle();
+        };
 
-            // Giriş alanlarını temizleme
-            document.getElementById('sarkiAdi').value = '';
-            document.getElementById('sarkiSure').value = '';
-        }
+        reader.readAsText(file);
+    }
 
-        // Listeyi güncelleyen fonksiyon
-        function listeGuncelle() {
-            const setlistElement = document.getElementById('setlist');
-            setlistElement.innerHTML = '';
+    // URL üzerinden liste içe aktarma fonksiyonu
+    function importFromURL() {
+        const url = document.getElementById('urlInput').value;
+        if (!url) return;
 
-            sarkilar.forEach((sarki, index) => {
-                const li = document.createElement('li');
-                li.textContent = `${sarki.isim} - ${sarki.sure} dakika`;
-
-                // Sil butonu oluşturma
-                const silButonu = document.createElement('button');
-                silButonu.textContent = 'Sil';
-                silButonu.className = 'delete-button';
-                silButonu.onclick = () => sarkiSil(index);
-
-                // Liste öğesine sil butonunu ekleme
-                li.appendChild(silButonu);
-                setlistElement.appendChild(li);
-            });
-
-            const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
-            document.getElementById('total-time').textContent = `Toplam Süre: ${toplamSure} dakika`;
-
-            // Autoscroll özelliği 10 şarkıdan sonra devreye girer
-            if (sarkilar.length > 10) {
-                setlistElement.style.overflowY = 'scroll';
-            } else {
-                setlistElement.style.overflowY = 'hidden';
-            }
-        }
-
-        // Şarkıyı listeden silen fonksiyon
-        function sarkiSil(index) {
-            sarkilar.splice(index, 1);
-            listeGuncelle();
-        }
-
-        // Listeyi dışa aktarma fonksiyonu
-        function exportList() {
-            const exportText = sarkilar.map(sarki => `${sarki.isim},${sarki.sure}`).join('\n');
-            const blob = new Blob([exportText], { type: 'text/plain' });
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'setlist.txt';
-            link.click();
-        }
-
-        // Listeyi içe aktarma fonksiyonu
-        function importList(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const importedLines = e.target.result.split('\n');
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                const importedLines = data.split('\n');
                 const newSarkilar = importedLines.map(line => {
                     const [isim, sure] = line.split(',');
                     return { isim: isim.trim(), sure: parseFloat(sure) };
@@ -206,11 +271,21 @@
 
                 sarkilar = newSarkilar;
                 listeGuncelle();
-            };
+            })
+            .catch(error => alert('URL üzerinden listeyi yüklerken bir hata oluştu.'));
+    }
 
-            reader.readAsText(file);
-        }
-    </script>
+    // PDF olarak kaydetme fonksiyonu
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.text("Setlist", 10, 10);
+        sarkilar.forEach((sarki, index) => {
+            doc.text(`${index + 1}. ${sarki.isim} - ${sarki.sure.toFixed(2)} dakika`, 10, 20 + index * 10);
+        });
+        doc.save('setlist.pdf');
+    }
+</script>
 
 </body>
 </html>
