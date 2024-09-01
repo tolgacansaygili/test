@@ -195,7 +195,7 @@
         const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
         document.getElementById('total-time').textContent = `Toplam Süre: ${toplamSure.toFixed(2)} dakika`;
 
-        if (sarkilar.length > 10) {
+        if (sarkilar.length > 3) {
             setlistElement.style.overflowY = 'scroll';
         } else {
             setlistElement.style.overflowY = 'hidden';
