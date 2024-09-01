@@ -111,9 +111,8 @@
 <input type="text" id="urlInput" placeholder="URL'den listeyi yükle">
 <button onclick="importFromURL()">URL'den İçe Aktar</button>
 
-<!-- PDF Olarak Kaydet ve Yazdır -->
+<!-- PDF Olarak Kaydet -->
 <button onclick="exportPDF()">PDF Olarak Kaydet</button>
-<button onclick="window.print()">Yazdır</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script>
@@ -253,7 +252,12 @@
         if (!url) return;
 
         fetch(url)
-            .then(response => response.text())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('URL yüklenemedi.');
+                }
+                return response.text();
+            })
             .then(data => {
                 const importedLines = data.split('\n');
                 const newSarkilar = importedLines.map(line => {
@@ -272,7 +276,7 @@
                 sarkilar = newSarkilar;
                 listeGuncelle();
             })
-            .catch(error => alert('URL üzerinden listeyi yüklerken bir hata oluştu.'));
+            .catch(error => alert(`URL üzerinden listeyi yüklerken bir hata oluştu: ${error.message}`));
     }
 
     // PDF olarak kaydetme fonksiyonu
