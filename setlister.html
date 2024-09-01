@@ -114,30 +114,14 @@
 <input type="text" id="urlInput" placeholder="URL'den listeyi yükle">
 <button onclick="importFromURL()">URL'den İçe Aktar</button>
 
+<!-- PDFMake Kütüphaneleri -->
+<script src="https://tolgacansaygili.github.io/test/lib/pdfmake.min.js"></script>
+<script src="https://tolgacansaygili.github.io/test/lib/vfs_fonts.js"></script>
+
 <button onclick="exportPDF()">PDF Olarak Kaydet</button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script>
     let sarkilar = [];
-
-    // Türkçe karakterleri belirlenen karakterlere çeviren fonksiyon
-    function convertTurkishCharacters(text) {
-        const charMap = {
-            'ç': 'c',
-            'ğ': 'g',
-            'ş': 's',
-            'ı': 'i',
-            'ö': 'o',
-            'ü': 'u',
-            'Ç': 'C',
-            'Ğ': 'G',
-            'Ş': 'S',
-            'İ': 'I',
-            'Ö': 'O',
-            'Ü': 'U'
-        };
-        return text.replace(/[çğşıöüÇĞŞİÖÜ]/g, char => charMap[char] || char);
-    }
 
     function sarkiEkle() {
         const sarkiAdi = document.getElementById('sarkiAdi').value;
@@ -291,22 +275,34 @@
             .catch(error => alert(`URL üzerinden listeyi yüklerken bir hata oluştu: ${error.message}`));
     }
 
-    function exportPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+function exportPDF() {
+    const documentDefinition = {
+        content: [
+            { text: 'Setlist', style: 'header', absolutePosition: { x: 65, y: 60 } }, // Başlık konumu
+            ...sarkilar.map((sarki, index) => ({
+                text: [
+                    { text: `${index + 1}. `, style: 'regular' }, // Sıra numarası
+                    { text: sarki.isim, bold: true, fontSize: 18 }, // Şarkı ismi kalın
+                    { text: ` - (${sarki.sure.toFixed(2)} dk.)`, italics: true, style: 'regular' } // Zaman kısmı regular ve italik
+                ],
+                absolutePosition: { x: 65, y: 100 + index * 25 } // Listedeki her öğenin konumu
+            }))
+        ],
+        styles: {
+            header: {
+                fontSize: 18,
+                bold: false // Başlık regular
+            },
+            regular: {
+                fontSize: 14,
+                bold: false // Normal stil
+            }
+        }
+    };
 
-        // Türkçe karakterleri çevirerek metinleri ekliyoruz
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(16);
-        doc.text(convertTurkishCharacters("Setlist"), 25, 30);
+    pdfMake.createPdf(documentDefinition).download('setlist.pdf');
+}
 
-        sarkilar.forEach((sarki, index) => {
-            const text = `${index + 1}. ${convertTurkishCharacters(sarki.isim)} - (${sarki.sure.toFixed(2)} dk.)`;
-            doc.text(text, 25, 40 + index * 10);
-        });
-
-        doc.save('setlist.pdf');
-    }
 </script>
 
 </body>
