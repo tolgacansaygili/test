@@ -44,6 +44,17 @@
             padding: 0;
             border: 1px solid #ccc;
         }
+
+
+
+        .draggable {
+                    
+                    border: 1px solid #ccc;
+                    text-align: left;
+                    padding-left: 40px;
+                    font-weight: bold;
+                }
+
         #total-time {
             margin-top: 10px;
             font-weight: bold;
@@ -164,7 +175,7 @@
 
         sarkilar.forEach((sarki, index) => {
             const li = document.createElement('li');
-            li.textContent = `${sarki.isim} - ${sarki.sure.toFixed(2)} dakika`;
+            li.textContent = `${sarki.isim} - ${sarki.sure.toFixed(2)}`;
             li.className = 'draggable';
             li.draggable = true;
 
@@ -193,7 +204,7 @@
         });
 
         const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
-        document.getElementById('total-time').textContent = `Toplam Süre: ${toplamSure.toFixed(2)} dakika`;
+        document.getElementById('total-time').textContent = `Toplam Süre: ${toplamSure.toFixed(2)}`;
 
         if (sarkilar.length > 3) {
             setlistElement.style.overflowY = 'scroll';
