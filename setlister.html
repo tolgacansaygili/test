@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setlist Oluşturucu</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #setlist {
+            margin-top: 20px;
+            width: 90%;
+            max-width: 400px;
+            max-height: 200px;
+            overflow-y: auto;
+            list-style: none;
+            padding: 0;
+            border: 1px solid #ccc;
+        }
+        #total-time {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 20px;
+            background-color: #ffa500;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fff;
+        }
+        .delete-button {
+            margin-left: 10px;
+            padding: 5px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        .delete-button:hover {
+            background-color: darkred;
+        }
+        @media (max-width: 600px) {
+            input, button {
+                font-size: 14px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Setlist Oluşturucu</h1>
+
+    <!-- Süre Girişi -->
+    <label for="sureLimit">Toplam Setlist Süresi (dakika):</label>
+    <input type="number" id="sureLimit" value="45" min="1" placeholder="Toplam süre girin">
+
+    <!-- Şarkı Adı Girişi -->
+    <label for="sarkiAdi">Şarkı Adı:</label>
+    <input type="text" id="sarkiAdi" placeholder="Şarkı adı girin">
+
+    <!-- Şarkı Süresi Girişi -->
+    <label for="sarkiSure">Şarkı Süresi (dakika):</label>
+    <input type="number" id="sarkiSure" placeholder="Şarkı süresini girin">
+
+    <!-- Şarkı Ekle Butonu -->
+    <button onclick="sarkiEkle()">Şarkı Ekle</button>
+
+    <!-- Toplam Süre Görüntüleme -->
+    <div id="total-time">Toplam Süre: 0 dakika</div>
+
+    <!-- Setlist Görüntüleme -->
+    <ul id="setlist"></ul>
+
+    <!-- Export ve Import Butonları -->
+    <input type="file" id="fileInput" accept=".txt" style="display: none;" onchange="importList(event)">
+    <button onclick="document.getElementById('fileInput').click()">Listeyi İçe Aktar</button>
+    <button onclick="exportList()">Listeyi Dışa Aktar</button>
+
+    <script>
+        // Şarkılar listesini tutmak için bir array
+        let sarkilar = [];
+
+        // Şarkı ekleme fonksiyonu
+        function sarkiEkle() {
+            const sarkiAdi = document.getElementById('sarkiAdi').value;
+            const sarkiSure = parseFloat(document.getElementById('sarkiSure').value);
+            const sureLimit = parseFloat(document.getElementById('sureLimit').value);
+
+            // Şarkı adı ve süresi kontrolü
+            if (!sarkiAdi || isNaN(sarkiSure) || sarkiSure <= 0) {
+                alert('Lütfen geçerli bir şarkı adı ve süre girin.');
+                return;
+            }
+
+            // Toplam süre kontrolü
+            const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
+            if (toplamSure + sarkiSure > sureLimit) {
+                alert(`Toplam süre ${sureLimit} dakikayı aşamaz!`);
+                return;
+            }
+
+            // Şarkıyı listeye ekleme
+            sarkilar.push({ isim: sarkiAdi, sure: sarkiSure });
+            listeGuncelle();
+
+            // Giriş alanlarını temizleme
+            document.getElementById('sarkiAdi').value = '';
+            document.getElementById('sarkiSure').value = '';
+        }
+
+        // Listeyi güncelleyen fonksiyon
+        function listeGuncelle() {
+            const setlistElement = document.getElementById('setlist');
+            setlistElement.innerHTML = '';
+
+            sarkilar.forEach((sarki, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${sarki.isim} - ${sarki.sure} dakika`;
+
+                // Sil butonu oluşturma
+                const silButonu = document.createElement('button');
+                silButonu.textContent = 'Sil';
+                silButonu.className = 'delete-button';
+                silButonu.onclick = () => sarkiSil(index);
+
+                // Liste öğesine sil butonunu ekleme
+                li.appendChild(silButonu);
+                setlistElement.appendChild(li);
+            });
+
+            const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
+            document.getElementById('total-time').textContent = `Toplam Süre: ${toplamSure} dakika`;
+
+            // Autoscroll özelliği 10 şarkıdan sonra devreye girer
+            if (sarkilar.length > 10) {
+                setlistElement.style.overflowY = 'scroll';
+            } else {
+                setlistElement.style.overflowY = 'hidden';
+            }
+        }
+
+        // Şarkıyı listeden silen fonksiyon
+        function sarkiSil(index) {
+            sarkilar.splice(index, 1);
+            listeGuncelle();
+        }
+
+        // Listeyi dışa aktarma fonksiyonu
+        function exportList() {
+            const exportText = sarkilar.map(sarki => `${sarki.isim},${sarki.sure}`).join('\n');
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'setlist.txt';
+            link.click();
+        }
+
+        // Listeyi içe aktarma fonksiyonu
+        function importList(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const importedLines = e.target.result.split('\n');
+                const newSarkilar = importedLines.map(line => {
+                    const [isim, sure] = line.split(',');
+                    return { isim: isim.trim(), sure: parseFloat(sure) };
+                }).filter(sarki => sarki.isim && !isNaN(sarki.sure));
+
+                const toplamSure = newSarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
+                const sureLimit = parseFloat(document.getElementById('sureLimit').value);
+
+                if (toplamSure > sureLimit) {
+                    alert(`İçe aktarılan liste toplam süresi ${sureLimit} dakikayı aşıyor!`);
+                    return;
+                }
+
+                sarkilar = newSarkilar;
+                listeGuncelle();
+            };
+
+            reader.readAsText(file);
+        }
+    </script>
+
+</body>
+</html>
