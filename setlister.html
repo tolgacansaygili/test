@@ -7,7 +7,7 @@
     <title>Setlist Oluşturucu by TCS</title>
     <style>
         body {
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Helvetica', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: left;
@@ -20,18 +20,14 @@
         input, button {
             margin: 10px;
             padding: 10px;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Helvetica', sans-serif;
             font-size: 16px;
             justify-content: left;
             text-align: left;
         }
-
-
-
         label {
-            font-weight:bold;
+            font-weight: bold;
             margin-left: 20px;
-
         }
         button {
             cursor: pointer;
@@ -44,29 +40,23 @@
             text-align: left;
         }
         button:hover {
-            background-color: ##0A4A6D;
+            background-color: #0A4A6D;
         }
         #setlist {
             margin-top: 20px;
             width: 90%;
-           
             max-height: 200px;
             overflow-y: auto;
             list-style: none;
             padding: 0;
             border: 1px solid #ccc;
         }
-
-
-
         .draggable {
-                    
-                    border: 1px solid #A5A5A5;
-                    text-align: left;
-                    padding-left: 40px;
-                    font-weight: bold;
-                }
-
+            border: 1px solid #A5A5A5;
+            text-align: left;
+            padding-left: 40px;
+            font-weight: bold;
+        }
         #total-time {
             margin-top: 10px;
             font-weight: bold;
@@ -75,7 +65,6 @@
             padding: 10px;
             border-radius: 5px;
             color: #fff;
-
         }
         .delete-button {
             margin-left: 10px;
@@ -103,46 +92,53 @@
 </head>
 <body>
 
-<!--<h3>Setlist Oluşturucu</h3>-->
-
-<!-- Süre Girişi -->
 <label for="sureLimit">Toplam Setlist Süresi (dakika):</label>
 <input type="number" id="sureLimit" min="1" placeholder="Toplam süre girin">
 
-<!-- Şarkı Adı Girişi -->
 <label for="sarkiAdi">Şarkı Adı:</label>
 <input type="text" id="sarkiAdi" placeholder="Şarkı adı girin">
 
-<!-- Şarkı Süresi Girişi -->
 <label for="sarkiSure">Şarkı Süresi (dakika:saniye):</label>
 <input type="text" id="sarkiSure" placeholder="örn. 2:16 veya 2.16">
 
-<!-- Şarkı Ekle Butonu -->
 <button onclick="sarkiEkle()">Şarkı Ekle</button>
 
-<!-- Toplam Süre Görüntüleme -->
 <div id="total-time">Toplam Süre: 0 dakika</div>
 
-<!-- Setlist Görüntüleme -->
 <ul id="setlist"></ul>
 
-<!-- Export ve Import Butonları -->
 <input type="file" id="fileInput" accept=".txt" style="display: none;" onchange="importList(event)">
 <button onclick="document.getElementById('fileInput').click()">Listeyi İçe Aktar</button>
 <button onclick="exportList()">Listeyi Dışa Aktar</button>
 
-<!-- URL'den İçe Aktarma -->
 <input type="text" id="urlInput" placeholder="URL'den listeyi yükle">
 <button onclick="importFromURL()">URL'den İçe Aktar</button>
 
-<!-- PDF Olarak Kaydet -->
 <button onclick="exportPDF()">PDF Olarak Kaydet</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 <script>
     let sarkilar = [];
 
-    // Şarkı ekleme fonksiyonu
+    // Türkçe karakterleri belirlenen karakterlere çeviren fonksiyon
+    function convertTurkishCharacters(text) {
+        const charMap = {
+            'ç': 'c',
+            'ğ': 'g',
+            'ş': 's',
+            'ı': 'i',
+            'ö': 'o',
+            'ü': 'u',
+            'Ç': 'C',
+            'Ğ': 'G',
+            'Ş': 'S',
+            'İ': 'I',
+            'Ö': 'O',
+            'Ü': 'U'
+        };
+        return text.replace(/[çğşıöüÇĞŞİÖÜ]/g, char => charMap[char] || char);
+    }
+
     function sarkiEkle() {
         const sarkiAdi = document.getElementById('sarkiAdi').value;
         let sarkiSure = document.getElementById('sarkiSure').value.replace(':', '.');
@@ -168,10 +164,9 @@
         document.getElementById('sarkiSure').value = '';
     }
 
-    // Şarkı süresi formatını kontrol eden fonksiyon
     function isValidTimeFormat(time) {
-        const regex = /^(\d{1,2}(\.\d{1,2})?)$/; // "." formatı için
-        const regexColon = /^(\d{1,2}:\d{1,2})$/; // ":" formatı için
+        const regex = /^(\d{1,2}(\.\d{1,2})?)$/;
+        const regexColon = /^(\d{1,2}:\d{1,2})$/;
 
         if (regex.test(time) || regexColon.test(time)) {
             return true;
@@ -181,59 +176,53 @@
         }
     }
 
-    // Listeyi güncelleyen fonksiyon
-function listeGuncelle() {
-    const setlistElement = document.getElementById('setlist');
-    setlistElement.innerHTML = '';
+    function listeGuncelle() {
+        const setlistElement = document.getElementById('setlist');
+        setlistElement.innerHTML = '';
 
-    sarkilar.forEach((sarki, index) => {
-        const li = document.createElement('li');
-        li.textContent = `${index + 1}. ${sarki.isim} - ${sarki.sure.toFixed(2)}`;
-        li.className = 'draggable';
-        li.draggable = true;
+        sarkilar.forEach((sarki, index) => {
+            const li = document.createElement('li');
+            li.textContent = `${index + 1}. ${sarki.isim} - ${sarki.sure.toFixed(2)}`;
+            li.className = 'draggable';
+            li.draggable = true;
 
-        // Sürükle bırak ile yer değiştirme
-        li.ondragstart = (event) => {
-            event.dataTransfer.setData('text', index);
-        };
-        li.ondragover = (event) => event.preventDefault();
-        li.ondrop = (event) => {
-            const draggedIndex = event.dataTransfer.getData('text');
-            const droppedIndex = index;
-            const draggedItem = sarkilar[draggedIndex];
-            sarkilar.splice(draggedIndex, 1);
-            sarkilar.splice(droppedIndex, 0, draggedItem);
-            listeGuncelle();
-        };
+            li.ondragstart = (event) => {
+                event.dataTransfer.setData('text', index);
+            };
+            li.ondragover = (event) => event.preventDefault();
+            li.ondrop = (event) => {
+                const draggedIndex = event.dataTransfer.getData('text');
+                const droppedIndex = index;
+                const draggedItem = sarkilar[draggedIndex];
+                sarkilar.splice(draggedIndex, 1);
+                sarkilar.splice(droppedIndex, 0, draggedItem);
+                listeGuncelle();
+            };
 
-        // Sil butonu oluşturma
-        const silButonu = document.createElement('button');
-        silButonu.textContent = 'Sil';
-        silButonu.className = 'delete-button';
-        silButonu.onclick = () => sarkiSil(index);
+            const silButonu = document.createElement('button');
+            silButonu.textContent = 'Sil';
+            silButonu.className = 'delete-button';
+            silButonu.onclick = () => sarkiSil(index);
 
-        li.appendChild(silButonu);
-        setlistElement.appendChild(li);
-    });
+            li.appendChild(silButonu);
+            setlistElement.appendChild(li);
+        });
 
-    const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
-    document.getElementById('total-time').textContent = `Toplam Süre: ${toplamSure.toFixed(2)}`;
+        const toplamSure = sarkilar.reduce((acc, sarki) => acc + sarki.sure, 0);
+        document.getElementById('total-time').textContent = `Toplam Süre: ${toplamSure.toFixed(2)}`;
 
-    if (sarkilar.length > 3) {
-        setlistElement.style.overflowY = 'scroll';
-    } else {
-        setlistElement.style.overflowY = 'hidden';
+        if (sarkilar.length > 3) {
+            setlistElement.style.overflowY = 'scroll';
+        } else {
+            setlistElement.style.overflowY = 'hidden';
+        }
     }
-}
 
-
-    // Şarkıyı listeden silen fonksiyon
     function sarkiSil(index) {
         sarkilar.splice(index, 1);
         listeGuncelle();
     }
 
-    // Listeyi dışa aktarma fonksiyonu
     function exportList() {
         const exportText = sarkilar.map(sarki => `${sarki.isim},${sarki.sure.toFixed(2)}`).join('\n');
         const blob = new Blob([exportText], { type: 'text/plain' });
@@ -243,7 +232,6 @@ function listeGuncelle() {
         link.click();
     }
 
-    // Listeyi içe aktarma fonksiyonu
     function importList(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -271,7 +259,6 @@ function listeGuncelle() {
         reader.readAsText(file);
     }
 
-    // URL üzerinden liste içe aktarma fonksiyonu
     function importFromURL() {
         const url = document.getElementById('urlInput').value;
         if (!url) return;
@@ -304,34 +291,23 @@ function listeGuncelle() {
             .catch(error => alert(`URL üzerinden listeyi yüklerken bir hata oluştu: ${error.message}`));
     }
 
-    // PDF olarak kaydetme fonksiyonu
-        function exportPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFont("courier", "normal"); // Başlık için kalın daktilo fontu ayarlıyoruz
-            doc.text("Setlist", 25, 30);
-            
-            sarkilar.forEach((sarki, index) => {
-                // Başlangıçta numaralar regular fontta yazılır
-                doc.setFont("courier", "normal"); // Numara için regular daktilo font
-                doc.text(`${index + 1}. `, 25, 40 + index * 10);
+    function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
 
-                // Şarkı ismi kısmı için kalın daktilo fontu ayarlıyoruz
-                doc.setFont("courier", "bold"); // Bold daktilo font ayarlama
-                doc.text(`${sarki.isim} - `, doc.getTextWidth(`${index + 1}. `) + 25, 40 + index * 10);
+        // Türkçe karakterleri çevirerek metinleri ekliyoruz
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(16);
+        doc.text(convertTurkishCharacters("Setlist"), 25, 30);
 
-                // Süre kısmı için italik daktilo fontu ayarlıyoruz
-                doc.setFont("courier", "italic"); // Italik daktilo font ayarlama
-                doc.text(`(${sarki.sure.toFixed(2)} dk.)`, doc.getTextWidth(`${index + 1}. ${sarki.isim} - `) + 25, 40 + index * 10);
-            });
+        sarkilar.forEach((sarki, index) => {
+            const text = `${index + 1}. ${convertTurkishCharacters(sarki.isim)} - (${sarki.sure.toFixed(2)} dk.)`;
+            doc.text(text, 25, 40 + index * 10);
+        });
 
-            doc.save('setlist.pdf');
-        }
-            
-
-
+        doc.save('setlist.pdf');
+    }
 </script>
 
 </body>
 </html>
- 
