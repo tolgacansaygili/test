@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Canlı TV Yayınları</title>
+    <title>TV</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         body {
@@ -45,12 +45,14 @@
             justify-content: center;
             align-items: center;
             background-color: #000;
+            flex-direction: column;
         }
 
-        video {
+        video, iframe {
             width: 90%;
             max-width: 960px;
-            height: auto;
+            height: 50%;
+            min-height: 360px;
             border: 2px solid #555;
             border-radius: 8px;
         }
@@ -88,8 +90,11 @@
 <body>
 
 <div id="channel-bar">
-    <ul>
-        <li data-src="https://halktv-live.daioncdn.net/halktv/halktv_1080p.m3u8">HALK TV</li>
+    <ul> 
+        <li data-type="youtube" data-src="ztmY_cCtUl0">SÖZCÜ TV</li>
+        <li data-type="youtube" data-src="ZSWPj9szKb8">HALK TV</li>
+        <li data-type="youtube" data-src="fNqmmqNNGp8">TELE 1</li>
+
         <li data-src="https://tv-trt1.medya.trt.com.tr/master.m3u8">TRT1</li>
         <li data-src="https://tv-trt2.medya.trt.com.tr/master_720.m3u8">TRT 2</li>
         <li data-src="https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8">TRT BELGESEL</li>
@@ -106,39 +111,63 @@
 </div>
 
 <div id="video-container">
-    <video id="video" controls autoplay></video>
+    <video id="video" controls autoplay style="display: none;"></video>
+    <iframe 
+    id="youtube-frame" 
+    width="90%" 
+    height="500" 
+    frameborder="0" 
+    allow="autoplay; encrypted-media" 
+    allowfullscreen 
+    src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&vq=hd720"
+    style="display: none;">
+</iframe>
+
 </div>
 
 <script>
     const video = document.getElementById('video');
+    const youtubeFrame = document.getElementById('youtube-frame');
     const listItems = document.querySelectorAll('#channel-bar li');
 
-    function playStream(url, element) {
+    function playStream(url, element, type = 'hls') {
         listItems.forEach(li => li.classList.remove('active'));
         element.classList.add('active');
 
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(url);
-            hls.attachMedia(video);
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = url;
+        if (type === 'youtube') {
+            video.style.display = 'none';
+            youtubeFrame.style.display = 'block';
+            youtubeFrame.src = `https://www.youtube.com/embed/${url}?autoplay=1`;
         } else {
-            alert("Tarayıcınız HLS desteklemiyor.");
+            youtubeFrame.style.display = 'none';
+            youtubeFrame.src = '';
+            video.style.display = 'block';
+
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(url);
+                hls.attachMedia(video);
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = url;
+            } else {
+                alert("Tarayıcınız HLS desteklemiyor.");
+            }
         }
     }
 
     listItems.forEach(item => {
         item.addEventListener('click', () => {
             const url = item.getAttribute('data-src');
-            playStream(url, item);
+            const type = item.getAttribute('data-type') || 'hls';
+            playStream(url, item, type);
         });
     });
 
-    // Varsayılan olarak ilk kanal açılır
     if (listItems.length > 0) {
         const first = listItems[0];
-        playStream(first.getAttribute('data-src'), first);
+        const url = first.getAttribute('data-src');
+        const type = first.getAttribute('data-type') || 'hls';
+        playStream(url, first, type);
     }
 </script>
 
