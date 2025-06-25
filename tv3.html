@@ -1,37 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8" />
-  <title>TV PWA</title>
+  <title>TV</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#111111">
-
-  <!-- Manifest içeriği -->
-  <link rel="manifest" href="data:application/manifest+json,{
-    &quot;name&quot;:&quot;Canlı TV&quot;,
-    &quot;short_name&quot;:&quot;TV&quot;,
-    &quot;start_url&quot;:&quot;.&quot;,
-    &quot;display&quot;:&quot;standalone&quot;,
-    &quot;background_color&quot;:&quot;%23000000&quot;,
-    &quot;theme_color&quot;:&quot;%23111111&quot;,
-    &quot;orientation&quot;:&quot;portrait&quot;,
-    &quot;icons&quot;:[
-      {
-        &quot;src&quot;:&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACt...&quot;,
-        &quot;sizes&quot;:&quot;192x192&quot;,
-        &quot;type&quot;:&quot;image/png&quot;
-      },
-      {
-        &quot;src&quot;:&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAIAAAB7...&quot;,
-        &quot;sizes&quot;:&quot;512x512&quot;,
-        &quot;type&quot;:&quot;image/png&quot;
-      }
-    ]
-  }">
-
-  <!-- Favicon (Base64 PNG) -->
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA...">
-
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     body {
@@ -43,7 +19,6 @@
       flex-direction: column;
       height: 100vh;
     }
-
     #video-container {
       flex: 1;
       display: flex;
@@ -51,14 +26,12 @@
       align-items: center;
       position: relative;
     }
-
     video, iframe {
       width: 100%;
       height: 100%;
       max-height: 100vh;
       border: none;
     }
-
     #channel-bar {
       position: fixed;
       bottom: 0;
@@ -69,14 +42,12 @@
       border-top: 1px solid #333;
       z-index: 999;
     }
-
     #channel-bar ul {
       display: flex;
       padding: 0;
       margin: 0;
       list-style: none;
     }
-
     #channel-bar li {
       padding: 10px 15px;
       white-space: nowrap;
@@ -84,16 +55,13 @@
       flex-shrink: 0;
       transition: background 0.3s;
     }
-
     #channel-bar li.active {
       background-color: #444;
       font-weight: bold;
     }
-
     ::-webkit-scrollbar {
       height: 6px;
     }
-
     ::-webkit-scrollbar-thumb {
       background: #444;
       border-radius: 10px;
@@ -109,30 +77,27 @@
 
 <div id="channel-bar">
   <ul>
-    <li data-type="youtube" data-src="ztmY_cCtUl0">SÖZCÜ TV</li>
-    <li data-type="youtube" data-src="ZSWPj9szKb8">HALK TV</li>
-    <li data-type="youtube" data-src="fNqmmqNNGp8">TELE 1</li>
-    <li data-src="https://tv-trt1.medya.trt.com.tr/master.m3u8">TRT1</li>
-    <li data-src="https://tv-trt2.medya.trt.com.tr/master_720.m3u8">TRT 2</li>
-    <li data-src="https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8">TRT BELGESEL</li>
-    <li data-src="https://dogus-live.daioncdn.net/tlc/tlc_720p.m3u8">TLC</li>
-    <li data-src="https://tv-trtspor1.medya.trt.com.tr/master.m3u8">TRT SPOR</li>
-    <li data-src="https://tv-trtspor2.medya.trt.com.tr/master.m3u8">TRT YILDIZ SPOR</li>
-    <li data-src="https://master.nhkworld.jp/nhkworld-tv/playlist/live.m3u8">NHK WORLD</li>
-    <li data-src="https://live.france24.com/hls/live/2037218-b/F24_EN_HI_HLS/master_5000.m3u8">FRANCE 24</li>
-    <li data-src="https://live-hls-web-aje.getaj.net/AJE/index.m3u8">AL JAZEERA</li>
-    <li data-src="https://d3pvma9xb2775h.cloudfront.net/live/omropfryslan/f8f68bd5/playlist.m3u8">Omrop NL</li>
-    <li data-src="https://live-fi.tvkaista.net/tv5/live.m3u8">TV5 FINLAND</li>
-    <li data-src="https://fl3.moveonjoy.com/MTV_CLASSIC/index.m3u8">MTV CLASSIC</li>
-    <li data-src="https://fl5.moveonjoy.com/MTV_LIVE/index.m3u8">MTV LIVE</li>
-    <li data-src="https://lotus.stingray.com/manifest/naturescape-a003-montreal/samsungtvplus/f7ed86a4-b8ac-38e0-a745-710077a95be6/3291200/manifest.m3u8">NATURESCAPE</li>
-    <li data-src="https://lotus.stingray.com/manifest/ose-142ads-montreal/samsungtvplus/f5102ca4-edd7-30ac-a357-877f60db023b/1790800/manifest.m3u8">90s</li>
-    <li data-src="https://live.m2.tv/hls3/720/stream.m3u8">M2 UKR</li>
-    <li data-src="https://stream.rtl.lu/data/live/tele/rtlgold/1080p.m3u8">RTL GOLD</li>
-    <li data-src="https://aegis-cloudfront-1.tubi.video/dc8bda97-ce9e-4091-b4e8-11254dea4da6/1080p-cc/index.m3u8">LOVE NATURE</li>
-
-  
-
+    <li data-id="sozcu" data-type="youtube" data-src="ztmY_cCtUl0">SÖZCÜ TV</li>
+    <li data-id="halk" data-type="youtube" data-src="ZSWPj9szKb8">HALK TV</li>
+    <li data-id="tele1" data-type="youtube" data-src="fNqmmqNNGp8">TELE 1</li>
+    <li data-id="trt1" data-src="https://tv-trt1.medya.trt.com.tr/master.m3u8">TRT1</li>
+    <li data-id="trt2" data-src="https://tv-trt2.medya.trt.com.tr/master_720.m3u8">TRT 2</li>
+    <li data-id="trtbelgesel" data-src="https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8">TRT BELGESEL</li>
+    <li data-id="tlc" data-src="https://dogus-live.daioncdn.net/tlc/tlc_720p.m3u8">TLC</li>
+    <li data-id="trtspor" data-src="https://tv-trtspor1.medya.trt.com.tr/master.m3u8">TRT SPOR</li>
+    <li data-id="trtyildiz" data-src="https://tv-trtspor2.medya.trt.com.tr/master.m3u8">TRT YILDIZ SPOR</li>
+    <li data-id="nhk" data-src="https://master.nhkworld.jp/nhkworld-tv/playlist/live.m3u8">NHK WORLD</li>
+    <li data-id="france24" data-src="https://live.france24.com/hls/live/2037218-b/F24_EN_HI_HLS/master_5000.m3u8">FRANCE 24</li>
+    <li data-id="aljazeera" data-src="https://live-hls-web-aje.getaj.net/AJE/index.m3u8">AL JAZEERA</li>
+    <li data-id="omrop" data-src="https://d3pvma9xb2775h.cloudfront.net/live/omropfryslan/f8f68bd5/playlist.m3u8">Omrop NL</li>
+    <li data-id="tv5" data-src="https://live-fi.tvkaista.net/tv5/live.m3u8">TV5 FINLAND</li>
+    <li data-id="mtvclassic" data-src="https://fl3.moveonjoy.com/MTV_CLASSIC/index.m3u8">MTV CLASSIC</li>
+    <li data-id="mtvlive" data-src="https://fl5.moveonjoy.com/MTV_LIVE/index.m3u8">MTV LIVE</li>
+    <li data-id="naturescape" data-src="https://lotus.stingray.com/manifest/naturescape-a003-montreal/samsungtvplus/f7ed86a4-b8ac-38e0-a745-710077a95be6/3291200/manifest.m3u8">NATURESCAPE</li>
+    <li data-id="90s" data-src="https://lotus.stingray.com/manifest/ose-142ads-montreal/samsungtvplus/f5102ca4-edd7-30ac-a357-877f60db023b/1790800/manifest.m3u8">90s</li>
+    <li data-id="m2" data-src="https://live.m2.tv/hls3/720/stream.m3u8">M2 UKR</li>
+    <li data-id="rtlgold" data-src="https://stream.rtl.lu/data/live/tele/rtlgold/1080p.m3u8">RTL GOLD</li>
+    <li data-id="lovenature" data-src="https://aegis-cloudfront-1.tubi.video/dc8bda97-ce9e-4091-b4e8-11254dea4da6/1080p-cc/index.m3u8">LOVE NATURE</li>
   </ul>
 </div>
 
@@ -193,42 +158,29 @@
     }
   });
 
-  if (listItems.length > 0) {
-    const first = listItems[0];
-    const url = first.getAttribute('data-src');
-    const type = first.getAttribute('data-type') || 'hls';
-    playStream(url, first, type);
-  }
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    let matched = false;
+
+    if (id) {
+      listItems.forEach((item, index) => {
+        if (item.getAttribute('data-id') === id) {
+          const url = item.getAttribute('data-src');
+          const type = item.getAttribute('data-type') || 'hls';
+          playStream(url, item, type);
+          matched = true;
+        }
+      });
+    }
+
+    if (!matched && listItems.length > 0) {
+      const first = listItems[0];
+      const url = first.getAttribute('data-src');
+      const type = first.getAttribute('data-type') || 'hls';
+      playStream(url, first, type);
+    }
+  });
 </script>
-
-<!-- Dahili Service Worker kaydı -->
-<script>
-  const swCode = `
-    const CACHE_NAME = "tv-app-cache-v1";
-    const urlsToCache = ["./"];
-
-    self.addEventListener("install", event => {
-      event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
-      );
-    });
-
-    self.addEventListener("fetch", event => {
-      event.respondWith(
-        caches.match(event.request).then(response => response || fetch(event.request))
-      );
-    });
-  `;
-
-  if ('serviceWorker' in navigator) {
-    const blob = new Blob([swCode], { type: 'application/javascript' });
-    const swUrl = URL.createObjectURL(blob);
-    navigator.serviceWorker.register(swUrl).then(
-      registration => console.log('Service Worker kayıtlı:', registration.scope),
-      err => console.log('Service Worker hatası:', err)
-    );
-  }
-</script>
-
 </body>
 </html>
