@@ -108,14 +108,12 @@
 <body>
 
 <div id="video-container">
-  <video id="video" controls autoplay style="display: none;"></video>
-  <iframe id="youtube-frame" allow="autoplay; encrypted-media" allowfullscreen style="display: none;"></iframe>
+  <video id="video" controls autoplay muted playsinline style="display: none;">Tarayıcınız video etiketini desteklemiyor.</video>
+  <iframe id="youtube-frame" title="YouTube Player" allow="autoplay; encrypted-media" allowfullscreen style="display: none;"></iframe>
 </div>
 
-<div id="sidebar">
+<nav id="channel-bar">
   <ul>
-    <li data-id="empty" li>
-    <li data-id="empty" li>
     <li data-id="mtvclassic" data-src="https://fl3.moveonjoy.com/MTV_CLASSIC/index.m3u8">♫ MTV CLASSIC</li>
     <li data-id="mtvlive" data-src="https://fl5.moveonjoy.com/MTV_LIVE/index.m3u8">♬ MTV LIVE</li>
     <li data-id="syfy" data-src="https://fl3.moveonjoy.com/SYFY/index.m3u8">⚡ SYFY</li>
@@ -142,13 +140,14 @@
     <li data-id="halk" data-type="youtube" data-src="ZSWPj9szKb8">🎤 HALK TV</li>
     <li data-id="tele1" data-type="youtube" data-src="fNqmmqNNGp8">📡 TELE 1</li>
   </ul>
-</div>
+</nav>
 
 <script>
   const video = document.getElementById('video');
   const youtubeFrame = document.getElementById('youtube-frame');
   const listItems = document.querySelectorAll('#channel-bar li');
   let currentIndex = 0;
+  let hls;
 
   function playStream(url, element, type = 'hls') {
     listItems.forEach(li => li.classList.remove('active'));
@@ -156,6 +155,10 @@
     currentIndex = Array.from(listItems).indexOf(element);
 
     if (type === 'youtube') {
+      if (hls) {
+        hls.destroy();
+        hls = null;
+      }
       video.style.display = 'none';
       video.src = '';
       youtubeFrame.style.display = 'block';
@@ -165,8 +168,13 @@
       youtubeFrame.src = '';
       video.style.display = 'block';
 
+      if (hls) {
+        hls.destroy();
+        hls = null;
+      }
+
       if (Hls.isSupported()) {
-        const hls = new Hls();
+        hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(video);
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
