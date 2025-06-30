@@ -1,174 +1,212 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <title>TV</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #111;
-            color: #fff;
-            display: flex;
-            height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV Yayını - Yan Menü</title>
+  <meta name="theme-color" content="#111111">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --accent: #1f1f1f;
+      --text: #ffffff;
+      --hover: #333333;
+      --active: #444444;
+    }
 
-        #channel-bar {
-            width: 200px;
-            background-color: #222;
-            overflow-y: auto;
-            border-right: 1px solid #333;
-        }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        #channel-bar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+    #sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 260px;
+      background-color: var(--accent);
+      overflow-y: auto;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1001;
+      border-right: 1px solid #222;
+      padding: 12px 0;
+    }
 
-        #channel-bar li {
-            padding: 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #333;
-            transition: background 0.3s;
-        }
+    #sidebar.open {
+      transform: translateX(0);
+    }
 
-        #channel-bar li:hover,
-        #channel-bar li.active {
-            background-color: #444;
-        }
+    #sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
-        #video-container {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
-            flex-direction: column;
-        }
+    #sidebar li {
+      padding: 12px 18px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      font-size: 0.95rem;
+    }
 
-        video, iframe {
-            width: 90%;
-            max-width: 960px;
-            height: 50%;
-            min-height: 360px;
-            border: 2px solid #555;
-            border-radius: 8px;
-        }
+    #sidebar li:hover {
+      background-color: var(--hover);
+    }
 
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
+    #sidebar li.active {
+      background-color: var(--active);
+      font-weight: bold;
+    }
 
-            #channel-bar {
-                width: 100%;
-                height: 150px;
-                display: flex;
-                overflow-x: auto;
-                overflow-y: hidden;
-            }
+    #toggle-sidebar {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 1100;
+      padding: 10px 16px;
+      background-color: var(--accent);
+      color: var(--text);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
 
-            #channel-bar ul {
-                display: flex;
-            }
+    #video-container {
+      height: 100vh;
+      margin-left: 0;
+      transition: margin-left 0.3s;
+    }
 
-            #channel-bar li {
-                flex: 0 0 auto;
-                border-right: 1px solid #333;
-                border-bottom: none;
-            }
+    #sidebar.open ~ #video-container {
+      margin-left: 260px;
+    }
 
-            #video-container {
-                flex: 1;
-                padding: 10px;
-            }
-        }
-    </style>
+    video, iframe {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background-color: black;
+      border: none;
+      display: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #555;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
 
-<div id="channel-bar">
-    <ul> 
-        <li data-type="youtube" data-src="ztmY_cCtUl0">SÖZCÜ TV</li>
-        <li data-type="youtube" data-src="ZSWPj9szKb8">HALK TV</li>
-        <li data-type="youtube" data-src="fNqmmqNNGp8">TELE 1</li>
+<button id="toggle-sidebar">📺</button>
 
-        <li data-src="https://tv-trt1.medya.trt.com.tr/master.m3u8">TRT1</li>
-        <li data-src="https://tv-trt2.medya.trt.com.tr/master_720.m3u8">TRT 2</li>
-        <li data-src="https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8">TRT BELGESEL</li>
-        <li data-src="https://dogus-live.daioncdn.net/tlc/tlc_720p.m3u8">TLC</li>
-        <li data-src="https://tv-trtspor1.medya.trt.com.tr/master.m3u8">TRT SPOR</li>
-        <li data-src="https://tv-trtspor2.medya.trt.com.tr/master.m3u8">TRT YILDIZ SPOR</li>
-        <li data-src="https://master.nhkworld.jp/nhkworld-tv/playlist/live.m3u8">NHK WORLD</li>
-        <li data-src="https://live.france24.com/hls/live/2037218-b/F24_EN_HI_HLS/master_5000.m3u8">FRANCE 24</li>
-        <li data-src="https://live-hls-web-aje.getaj.net/AJE/index.m3u8">AL JAZEERA</li>
-        <li data-src="https://d3pvma9xb2775h.cloudfront.net/live/omropfryslan/f8f68bd5/playlist.m3u8">Omrop NL</li>
-        <li data-src="https://svs.itworkscdn.net/smc4sportslive/smc4.smil/smc4sportspublish/smc4tv_720p/chunks.m3u8">SPORT UZ</li>
-        <li data-src="https://live-fi.tvkaista.net/tv5/live.m3u8">TV5 FINLAND</li>
-    </ul>
+<div id="sidebar">
+  <ul>
+    <li data-id="trtbelgesel" data-src="https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8">🌍 TRT BELGESEL</li>
+    <li data-id="tlc" data-src="https://dogus-live.daioncdn.net/tlc/tlc_720p.m3u8">🧪 TLC</li>
+    <li data-id="trtspor" data-src="https://tv-trtspor1.medya.trt.com.tr/master.m3u8">⚽ TRT SPOR</li>
+    <li data-id="trtyildiz" data-src="https://tv-trtspor2.medya.trt.com.tr/master.m3u8">⭐ TRT YILDIZ SPOR</li>
+    <li data-id="nhk" data-src="https://master.nhkworld.jp/nhkworld-tv/playlist/live.m3u8">🌐 NHK WORLD</li>
+    <li data-id="france24" data-src="https://live.france24.com/hls/live/2037218-b/F24_EN_HI_HLS/master_5000.m3u8">🇫🇷 FRANCE 24</li>
+    <li data-id="aljazeera" data-src="https://live-hls-web-aje.getaj.net/AJE/index.m3u8">🗺️ AL JAZEERA</li>
+    <li data-id="omrop" data-src="https://d3pvma9xb2775h.cloudfront.net/live/omropfryslan/f8f68bd5/playlist.m3u8">🇳🇱 Omrop NL</li>
+    <li data-id="tv5" data-src="https://live-fi.tvkaista.net/tv5/live.m3u8">📡 TV5 FINLAND</li>
+    <li data-id="mtvclassic" data-src="https://fl3.moveonjoy.com/MTV_CLASSIC/index.m3u8">♫ MTV CLASSIC</li>
+    <li data-id="mtvlive" data-src="https://fl5.moveonjoy.com/MTV_LIVE/index.m3u8">♬ MTV LIVE</li>
+    <li data-id="syfy" data-src="https://fl3.moveonjoy.com/SYFY/index.m3u8">⚡ SYFY</li>
+    <li data-id="dsny" data-src="https://fl3.moveonjoy.com/DISNEY_XD/index.m3u8">🐤 DISNEY XD</li>
+    <li data-id="naturescape" data-src="https://lotus.stingray.com/manifest/naturescape-a003-montreal/samsungtvplus/f7ed86a4-b8ac-38e0-a745-710077a95be6/3291200/manifest.m3u8">🌿 NATURESCAPE</li>
+    <li data-id="90s" data-src="https://lotus.stingray.com/manifest/ose-142ads-montreal/samsungtvplus/f5102ca4-edd7-30ac-a357-877f60db023b/1790800/manifest.m3u8">🕺 90s</li>
+    <li data-id="m2" data-src="https://live.m2.tv/hls3/720/stream.m3u8">🇺🇦 M2 UKR</li>
+    <li data-id="rtlgold" data-src="https://stream.rtl.lu/data/live/tele/rtlgold/1080p.m3u8">🟡 RTL GOLD</li>
+    <li data-id="lovenature" data-src="https://aegis-cloudfront-1.tubi.video/dc8bda97-ce9e-4091-b4e8-11254dea4da6/1080p-cc/index.m3u8">🌸 LOVE NATURE</li>
+    <li data-id="trt1" data-src="https://tv-trt1.medya.trt.com.tr/master.m3u8">🇹🇷 TRT1</li>
+    <li data-id="trt2" data-src="https://tv-trt2.medya.trt.com.tr/master_720.m3u8">🎬 TRT 2</li>
+    <li data-id="sozcu" data-type="youtube" data-src="ztmY_cCtUl0">📺 SÖZCÜ TV</li>
+    <li data-id="halk" data-type="youtube" data-src="ZSWPj9szKb8">🎤 HALK TV</li>
+    <li data-id="tele1" data-type="youtube" data-src="fNqmmqNNGp8">📡 TELE 1</li>
+  </ul>
 </div>
 
 <div id="video-container">
-    <video id="video" controls autoplay style="display: none;"></video>
-    <iframe 
-    id="youtube-frame" 
-    width="90%" 
-    height="500" 
-    frameborder="0" 
-    allow="autoplay; encrypted-media" 
-    allowfullscreen 
-    src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&vq=hd720"
-    style="display: none;">
-</iframe>
-
+  <video id="video" controls autoplay></video>
+  <iframe id="youtube-frame" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 </div>
 
 <script>
-    const video = document.getElementById('video');
-    const youtubeFrame = document.getElementById('youtube-frame');
-    const listItems = document.querySelectorAll('#channel-bar li');
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('toggle-sidebar');
+  const video = document.getElementById('video');
+  const youtubeFrame = document.getElementById('youtube-frame');
+  const items = sidebar.querySelectorAll('li');
+  let currentIndex = 0;
 
-    function playStream(url, element, type = 'hls') {
-        listItems.forEach(li => li.classList.remove('active'));
-        element.classList.add('active');
+  toggleBtn.onclick = () => {
+    sidebar.classList.toggle('open');
+  };
 
-        if (type === 'youtube') {
-            video.style.display = 'none';
-            youtubeFrame.style.display = 'block';
-            youtubeFrame.src = `https://www.youtube.com/embed/${url}?autoplay=1`;
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      items.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+      const url = item.dataset.src;
+      const type = item.dataset.type || 'hls';
+      currentIndex = [...items].indexOf(item);
+
+      if (type === 'youtube') {
+        video.style.display = 'none';
+        youtubeFrame.style.display = 'block';
+        youtubeFrame.src = `https://www.youtube.com/embed/${url}?autoplay=1&vq=hd720`;
+      } else {
+        youtubeFrame.style.display = 'none';
+        youtubeFrame.src = '';
+        video.style.display = 'block';
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(url);
+          hls.attachMedia(video);
         } else {
-            youtubeFrame.style.display = 'none';
-            youtubeFrame.src = '';
-            video.style.display = 'block';
-
-            if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(url);
-                hls.attachMedia(video);
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = url;
-            } else {
-                alert("Tarayıcınız HLS desteklemiyor.");
-            }
+          video.src = url;
         }
-    }
+      }
 
-    listItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const url = item.getAttribute('data-src');
-            const type = item.getAttribute('data-type') || 'hls';
-            playStream(url, item, type);
-        });
+      sidebar.classList.remove('open');
     });
+  });
 
-    if (listItems.length > 0) {
-        const first = listItems[0];
-        const url = first.getAttribute('data-src');
-        const type = first.getAttribute('data-type') || 'hls';
-        playStream(url, first, type);
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    let matched = false;
+
+    if (id) {
+      items.forEach(item => {
+        if (item.dataset.id === id) {
+          item.click();
+          matched = true;
+        }
+      });
     }
+
+    if (!matched && items.length) {
+      items[0].click();
+    }
+  });
 </script>
 
 </body>
