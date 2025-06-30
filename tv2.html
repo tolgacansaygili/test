@@ -1,228 +1,234 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TV</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: #303942;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TV Yayını</title>
+  <meta name="theme-color" content="#111111">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    :root {
+      --bg-color: #0f0f0f;
+      --accent-color: #1f1f1f;
+      --text-color: #fff;
+      --hover-color: #333;
+      --active-color: #444;
+    }
 
-        #video-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 100%; /* Başlangıçta ekranın dışında */
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10;
-            justify-content: center;
-            align-items: center;
-        }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        #video-container.show {
-            display: flex;
-            animation: slideIn 0.5s forwards; /* Animasyon ekle */
-        }
+    #video-container {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      background-color: black;
+    }
 
-        #video-container.hide {
-            animation: slideOut 0.5s forwards; /* Kapatma animasyonu */
-        }
+    video, iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: contain;
+      background-color: black;
+    }
 
-        @keyframes slideIn {
-            from {
-                left: 100%; /* Sağdan başla */
-            }
-            to {
-                left: 0; /* Ortaya gel */
-            }
-        }
+    #toggle-menu {
+      position: fixed;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      z-index: 1000;
+      padding: 10px 16px;
+      background: var(--accent-color);
+      color: var(--text-color);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    }
 
-        @keyframes slideOut {
-            from {
-                left: 0; /* Ortadan başla */
-            }
-            to {
-                left: 100%; /* Sağa kayarak çık */
-            }
-        }
+    #channel-bar {
+      position: fixed;
+      bottom: 60px;
+      left: 12px;
+      right: 12px;
+      max-height: 250px;
+      overflow-y: auto;
+      background: var(--accent-color);
+      border-radius: 12px;
+      border: 1px solid #222;
+      padding: 10px;
+      display: none;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      opacity: 0.8;
+      text-align:center;
+    }
 
-        #video-container video {
-            width: 90%;
-            max-width: 999px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-            border: 2px solid #888; /* Yeni eklenen border */
-        }
+    #channel-bar ul {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      gap: 6px;
+    }
 
-        #close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 50px; /* Daha büyük font boyutu */
-            color: #666; /* Kırmızı renk */
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
+    #channel-bar li {
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: transparent;
+      transition: background-color 0.3s;
+      font-size: 0.95rem;
+      white-space: nowrap;
+    }
 
-        #close-btn:hover {
-            color: #888;
-        }
+    #channel-bar li:hover {
+      background-color: var(--hover-color);
+    }
 
-        #channel-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh; /* Tam sayfa yüksekliği */
-            width: 200px; /* Genişliği ayarlayabilirsiniz */
-            background: #303942;
-            color: #fff;
-            text-align: left; /* Metni sola yasla */
-            padding: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            z-index: 5;
-            overflow-y: auto; /* Gerektiğinde kaydırma çubuğunu göster */
-            border-right: 2px solid #888; /* Yeni eklenen border */
-            cursor: pointer; /* İşaretçi */
-            touch-action: manipulation; /* Dokunmatik ekranlar için */
-        }
+    #channel-bar li.active {
+      background-color: var(--active-color);
+      font-weight: 600;
+    }
 
-        #channel-bar ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
 
-        #channel-bar li {
-            margin: 10px 0;
-            cursor: pointer;
-            font-size: 18px;
-            transition: transform 0.2s ease;
-            background-color: #252935;
-            padding: 10px 20px;
-            border-radius: 3px;
-        }
-
-        #channel-bar li:hover {
-            transform: translateY(-3px);
-            background-color: #1A1D24;
-        }
-
-        /* Scrollbar Stilizasyonu */
-        #channel-bar::-webkit-scrollbar {
-            width: 12px;
-        }
-
-        #channel-bar::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 10px;
-        }
-
-        #channel-bar::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 10px;
-            border: 3px solid rgba(0, 0, 0, 0.7);
-        }
-
-        #channel-bar::-webkit-scrollbar-thumb:hover {
-            background: #777;
-        }
-
-        @media screen and (max-width: 600px) {
-            #channel-bar li {
-                font-size: 14px;
-            }
-        }
-    </style>
+    ::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div id="video-container">
-        <span id="close-btn">&times;</span>
-        <video id="video" controls></video>
-    </div>
 
-    <div id="channel-bar">
-        <ul>
- 
-            <li data-src="https://halktv-live.daioncdn.net/halktv/halktv_1080p.m3u8">HALK TV</li>
-            <li data-src="https://tv-trt1.medya.trt.com.tr/master.m3u8">TRT1</li>
-            <li data-src="https://tv-trt2.medya.trt.com.tr/master_720.m3u8">TRT 2</li>
-            <li data-src="https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8">TRT BELGESEL</li>
-            <li data-src="https://dogus-live.daioncdn.net/tlc/tlc_720p.m3u8">TLC</li>
-            <li data-src="https://tv-trtspor1.medya.trt.com.tr/master.m3u8">TRT SPOR</li>
-            <li data-src="https://tv-trtspor2.medya.trt.com.tr/master.m3u8">TRT YILDIZ SPOR</li>
-            <li data-src="https://master.nhkworld.jp/nhkworld-tv/playlist/live.m3u8">NHK WORLD</li>
-            <li data-src="https://live.france24.com/hls/live/2037218-b/F24_EN_HI_HLS/master_5000.m3u8">FRANCE 24</li>
-            <li data-src="https://live-hls-web-aje.getaj.net/AJE/index.m3u8">AL JAZEERA</li>
-            <li data-src="https://d3pvma9xb2775h.cloudfront.net/live/omropfryslan/f8f68bd5/playlist.m3u8">Omrop NL</li>
-            <li data-src="https://svs.itworkscdn.net/smc4sportslive/smc4.smil/smc4sportspublish/smc4tv_720p/chunks.m3u8">SPORT UZ</li>
-            <li data-src="https://live-fi.tvkaista.net/tv5/live.m3u8">TV5 FINLAND</li>
-            
+<div id="video-container">
+  <video id="video" controls autoplay style="display: none;"></video>
+  <iframe id="youtube-frame" allow="autoplay; encrypted-media" allowfullscreen style="display: none;"></iframe>
+</div>
 
+<button id="toggle-menu">📺 Kanallar</button>
 
+<div id="channel-bar">
+  <ul>
+    <li data-id="trtbelgesel" data-src="https://tv-trtbelgesel.medya.trt.com.tr/master.m3u8">🌍 TRT BELGESEL</li>
+    <li data-id="tlc" data-src="https://dogus-live.daioncdn.net/tlc/tlc_720p.m3u8">🧪 TLC</li>
+    <li data-id="trtspor" data-src="https://tv-trtspor1.medya.trt.com.tr/master.m3u8">⚽ TRT SPOR</li>
+    <li data-id="trtyildiz" data-src="https://tv-trtspor2.medya.trt.com.tr/master.m3u8">⭐ TRT YILDIZ SPOR</li>
+    <li data-id="nhk" data-src="https://master.nhkworld.jp/nhkworld-tv/playlist/live.m3u8">🌐 NHK WORLD</li>
+    <li data-id="france24" data-src="https://live.france24.com/hls/live/2037218-b/F24_EN_HI_HLS/master_5000.m3u8">🇫🇷 FRANCE 24</li>
+    <li data-id="aljazeera" data-src="https://live-hls-web-aje.getaj.net/AJE/index.m3u8">🗺️ AL JAZEERA</li>
+    <li data-id="omrop" data-src="https://d3pvma9xb2775h.cloudfront.net/live/omropfryslan/f8f68bd5/playlist.m3u8">🇳🇱 Omrop NL</li>
+    <li data-id="tv5" data-src="https://live-fi.tvkaista.net/tv5/live.m3u8">📡 TV5 FINLAND</li>
+    <li data-id="mtvclassic" data-src="https://fl3.moveonjoy.com/MTV_CLASSIC/index.m3u8">♫ MTV CLASSIC</li>
+    <li data-id="mtvlive" data-src="https://fl5.moveonjoy.com/MTV_LIVE/index.m3u8">♬ MTV LIVE</li>
+    <li data-id="syfy" data-src="https://fl3.moveonjoy.com/SYFY/index.m3u8">⚡ SYFY</li>
+    <li data-id="dsny" data-src="https://fl3.moveonjoy.com/DISNEY_XD/index.m3u8">🐤 DISNEY XD</li>
+    <li data-id="naturescape" data-src="https://lotus.stingray.com/manifest/naturescape-a003-montreal/samsungtvplus/f7ed86a4-b8ac-38e0-a745-710077a95be6/3291200/manifest.m3u8">🌿 NATURESCAPE</li>
+    <li data-id="90s" data-src="https://lotus.stingray.com/manifest/ose-142ads-montreal/samsungtvplus/f5102ca4-edd7-30ac-a357-877f60db023b/1790800/manifest.m3u8">🕺 90s</li>
+    <li data-id="m2" data-src="https://live.m2.tv/hls3/720/stream.m3u8">🇺🇦 M2 UKR</li>
+    <li data-id="rtlgold" data-src="https://stream.rtl.lu/data/live/tele/rtlgold/1080p.m3u8">🟡 RTL GOLD</li>
+    <li data-id="lovenature" data-src="https://aegis-cloudfront-1.tubi.video/dc8bda97-ce9e-4091-b4e8-11254dea4da6/1080p-cc/index.m3u8">🌸 LOVE NATURE</li>
+    <li data-id="trt1" data-src="https://tv-trt1.medya.trt.com.tr/master.m3u8">🇹🇷 TRT1</li>
+    <li data-id="trt2" data-src="https://tv-trt2.medya.trt.com.tr/master_720.m3u8">🎬 TRT 2</li>
+    <li data-id="sozcu" data-type="youtube" data-src="ztmY_cCtUl0">📺 SÖZCÜ TV</li>
+    <li data-id="halk" data-type="youtube" data-src="ZSWPj9szKb8">🎤 HALK TV</li>
+    <li data-id="tele1" data-type="youtube" data-src="fNqmmqNNGp8">📡 TELE 1</li>
+  </ul>
+</div>
 
+<script>
+  const video = document.getElementById('video');
+  const youtubeFrame = document.getElementById('youtube-frame');
+  const listItems = document.querySelectorAll('#channel-bar li');
+  const toggleMenu = document.getElementById('toggle-menu');
+  const channelBar = document.getElementById('channel-bar');
+  let currentIndex = 0;
 
-            <!-- Daha fazla kanal eklenebilir -->
-        </ul>
-    </div>
+  function playStream(url, element, type = 'hls') {
+    listItems.forEach(li => li.classList.remove('active'));
+    element.classList.add('active');
+    currentIndex = Array.from(listItems).indexOf(element);
 
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const videoContainer = document.getElementById('video-container');
-            const video = document.getElementById('video');
-            const closeBtn = document.getElementById('close-btn');
-            const channelBar = document.getElementById('channel-bar');
+    if (type === 'youtube') {
+      video.style.display = 'none';
+      video.src = '';
+      youtubeFrame.style.display = 'block';
+      youtubeFrame.src = `https://www.youtube.com/embed/${url}?autoplay=1&vq=hd720`;
+    } else {
+      youtubeFrame.style.display = 'none';
+      youtubeFrame.src = '';
+      video.style.display = 'block';
 
-            // Kanal butonlarına tıklandığında videoyu aç
-            channelBar.addEventListener('click', (e) => {
-                if (e.target.tagName === 'LI') {
-                    const videoSrc = e.target.getAttribute('data-src');
-                    playVideo(videoSrc);
-                }
-            });
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = url;
+      } else {
+        alert("Tarayıcınız HLS desteklemiyor.");
+      }
+    }
 
-            // Kapatma butonuna tıklandığında videoyu kapat
-            closeBtn.addEventListener('click', () => {
-                videoContainer.classList.remove('show'); // Animasyonlu şekilde gizle
-                videoContainer.classList.add('hide'); // Kapatma animasyonunu başlat
-                setTimeout(() => {
-                    videoContainer.style.display = 'none';
-                    videoContainer.classList.remove('hide');
-                    video.pause();
-                }, 500); // Animasyon süresince bekle
-            });
+    channelBar.style.display = 'none';
+  }
 
-            function playVideo(src) {
-                if (Hls.isSupported()) {
-                    const hls = new Hls();
-                    hls.loadSource(src);
-                    hls.attachMedia(video);
-                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                        video.play();
-                    });
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = src;
-                    video.addEventListener('loadedmetadata', () => {
-                        video.play();
-                    });
-                } else {
-                    alert('HLS desteği bulunamadı.');
-                }
+  listItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const url = item.getAttribute('data-src');
+      const type = item.getAttribute('data-type') || 'hls';
+      playStream(url, item, type);
+    });
+  });
 
-                videoContainer.style.display = 'flex'; // Video container'ı göster
-                videoContainer.classList.add('show'); // Animasyonlu şekilde göster
-            }
-        });
-    </script>
+  toggleMenu.addEventListener('click', () => {
+    channelBar.style.display = channelBar.style.display === 'block' ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!channelBar.contains(e.target) && e.target !== toggleMenu) {
+      channelBar.style.display = 'none';
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    let matched = false;
+
+    if (id) {
+      listItems.forEach(item => {
+        if (item.getAttribute('data-id') === id) {
+          const url = item.getAttribute('data-src');
+          const type = item.getAttribute('data-type') || 'hls';
+          playStream(url, item, type);
+          matched = true;
+        }
+      });
+    }
+
+    if (!matched && listItems.length > 0) {
+      const first = listItems[0];
+      const url = first.getAttribute('data-src');
+      const type = first.getAttribute('data-type') || 'hls';
+      playStream(url, first, type);
+    }
+  });
+</script>
+
 </body>
 </html>
