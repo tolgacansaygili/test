@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TV Yayını</title>
   <meta name="theme-color" content="#111111">
-  <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="favicon.png">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
@@ -92,6 +91,7 @@
     ::-webkit-scrollbar {
       height: 6px;
     }
+
     ::-webkit-scrollbar-thumb {
       background: #555;
       border-radius: 10px;
@@ -103,6 +103,26 @@
         font-size: 0.85rem;
       }
     }
+
+    /* Kanal adı overlay */
+    #channel-name-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      color: white ;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 4.2rem;
+      font-weight: bold;
+      pointer-events: none;
+      transition: opacity 0.9s ease ;
+      z-index: 1000;
+    }
+
+    #opacityx{opacity:0.2}
+
   </style>
 </head>
 <body>
@@ -110,6 +130,7 @@
 <div id="video-container">
   <video id="video" controls autoplay playsinline style="display: none;">Tarayıcınız video etiketini desteklemiyor.</video>
   <iframe id="youtube-frame" title="YouTube Player" allow="autoplay; encrypted-media" allowfullscreen style="display: none;"></iframe>
+  <div id="opacityx"> <div id="channel-name-overlay"></div> </div>
 </div>
 
 <nav id="channel-bar">
@@ -149,6 +170,16 @@
   let currentIndex = 0;
   let hls;
 
+  function showChannelName(name) {
+    const overlay = document.getElementById('channel-name-overlay');
+    overlay.textContent = name;
+    overlay.style.opacity = 1;
+    clearTimeout(overlay._hideTimeout);
+    overlay._hideTimeout = setTimeout(() => {
+      overlay.style.opacity = 0;
+    }, 3000);
+  }
+
   function playStream(url, element, type = 'hls') {
     listItems.forEach(li => li.classList.remove('active'));
     element.classList.add('active');
@@ -183,6 +214,8 @@
         alert("Tarayıcınız HLS desteklemiyor.");
       }
     }
+
+    showChannelName(element.textContent);
   }
 
   listItems.forEach(item => {
@@ -193,24 +226,7 @@
     });
   });
 
-  let touchStartX = 0;
-  document.getElementById('video-container').addEventListener('touchstart', (e) => {
-  touchStartX = e.changedTouches[0].screenX;
-});
-
-document.getElementById('video-container').addEventListener('touchend', (e) => {
-  const touchEndX = e.changedTouches[0].screenX;
-  const diff = touchEndX - touchStartX;
-  if (Math.abs(diff) > 50) {
-    if (diff < 0 && currentIndex < listItems.length - 1) {
-      listItems[currentIndex + 1].dispatchEvent(new Event('click'));
-    } else if (diff > 0 && currentIndex > 0) {
-      listItems[currentIndex - 1].dispatchEvent(new Event('click'));
-    }
-  }
-});
-
-
+  // İlk kanal otomatik oynatma
   window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
@@ -235,16 +251,32 @@ document.getElementById('video-container').addEventListener('touchend', (e) => {
     }
   });
 
+  // Yön tuşları ile kanal değiştirme
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' && currentIndex < listItems.length - 1) {
+      listItems[currentIndex + 1].dispatchEvent(new Event('click'));
+    } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+      listItems[currentIndex - 1].dispatchEvent(new Event('click'));
+    }
+  });
 
-  // Klavye yön tuşları ile kanal değiştirme
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight' && currentIndex < listItems.length - 1) {
-    listItems[currentIndex + 1].dispatchEvent(new Event('click'));
-  } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-    listItems[currentIndex - 1].dispatchEvent(new Event('click'));
-  }
-});
+  // Dokunmatik geçiş desteği
+  let touchStartX = 0;
+  document.getElementById('video-container').addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
 
+  document.getElementById('video-container').addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].screenX;
+    const diff = touchEndX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      if (diff < 0 && currentIndex < listItems.length - 1) {
+        listItems[currentIndex + 1].dispatchEvent(new Event('click'));
+      } else if (diff > 0 && currentIndex > 0) {
+        listItems[currentIndex - 1].dispatchEvent(new Event('click'));
+      }
+    }
+  });
 </script>
 </body>
 </html>
