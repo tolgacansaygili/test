@@ -108,7 +108,7 @@
 <body>
 
 <div id="video-container">
-  <video id="video" controls autoplay muted playsinline style="display: none;">Tarayıcınız video etiketini desteklemiyor.</video>
+  <video id="video" controls autoplay playsinline style="display: none;">Tarayıcınız video etiketini desteklemiyor.</video>
   <iframe id="youtube-frame" title="YouTube Player" allow="autoplay; encrypted-media" allowfullscreen style="display: none;"></iframe>
 </div>
 
@@ -195,20 +195,21 @@
 
   let touchStartX = 0;
   document.getElementById('video-container').addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  });
+  touchStartX = e.changedTouches[0].screenX;
+});
 
-  document.getElementById('video-container').addEventListener('touchend', (e) => {
-    const touchEndX = e.changedTouches[0].screenX;
-    const diff = touchEndX - touchStartX;
-    if (Math.abs(diff) > 50) {
-      if (diff < 0 && currentIndex < listItems.length - 1) {
-        listItems[currentIndex + 1].click();
-      } else if (diff > 0 && currentIndex > 0) {
-        listItems[currentIndex - 1].click();
-      }
+document.getElementById('video-container').addEventListener('touchend', (e) => {
+  const touchEndX = e.changedTouches[0].screenX;
+  const diff = touchEndX - touchStartX;
+  if (Math.abs(diff) > 50) {
+    if (diff < 0 && currentIndex < listItems.length - 1) {
+      listItems[currentIndex + 1].dispatchEvent(new Event('click'));
+    } else if (diff > 0 && currentIndex > 0) {
+      listItems[currentIndex - 1].dispatchEvent(new Event('click'));
     }
-  });
+  }
+});
+
 
   window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
@@ -233,6 +234,17 @@
       playStream(url, first, type);
     }
   });
+
+
+  // Klavye yön tuşları ile kanal değiştirme
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' && currentIndex < listItems.length - 1) {
+    listItems[currentIndex + 1].dispatchEvent(new Event('click'));
+  } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+    listItems[currentIndex - 1].dispatchEvent(new Event('click'));
+  }
+});
+
 </script>
 </body>
 </html>
